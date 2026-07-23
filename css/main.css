@@ -115,6 +115,32 @@ main {
 .home-date { color: var(--accent); font-weight: 700; margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .08em; }
 .home-sub { color: var(--text-dim); margin: 0; }
 
+.progress {
+  background: var(--bg-elev);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.prog-top { display: flex; align-items: center; gap: 12px; }
+.prog-head { font-weight: 800; font-size: 15px; letter-spacing: -.01em; }
+.prog-dots { display: flex; gap: 8px; margin-left: auto; }
+.prog-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--line);
+  display: grid; place-items: center;
+  font-size: 14px; font-weight: 800;
+  color: #fff; text-decoration: none;
+  background: var(--bg-elev-2);
+}
+.prog-dot.partial { border-color: var(--warn); }
+.prog-dot.done { background: var(--good); border-color: var(--good); }
+.prog-streak { margin-top: 12px; font-size: 13.5px; font-weight: 600; color: var(--text-dim); }
+.prog-streak b { color: var(--warn); font-size: 15px; }
+.prog-streak.dim { color: var(--text-faint); }
+.prog-best { color: var(--text-faint); font-weight: 600; }
+
 .cards { display: grid; gap: 14px; }
 .card {
   display: block;

@@ -143,6 +143,36 @@
     write(PZ.stateKey(game), { day: PZ.dayNumber(), data: data });
   };
 
+  // Combined "finish all three today" streak across every game.
+  PZ.combinedKey = "pz:combined:stats";
+  PZ.getCombined = function () {
+    return read(PZ.combinedKey, {
+      lastDoneDay: null, currentStreak: 0, maxStreak: 0, totalDays: 0
+    });
+  };
+
+  // True when today's puzzle for `game` has been played to completion.
+  PZ.isDoneToday = function (game) {
+    var d = PZ.loadDaily(game);
+    return !!(d && d.finished);
+  };
+
+  // Records a combined day the first time all three puzzles are finished.
+  // Safe to call on every page load — it only writes when the day flips
+  // from incomplete to complete.
+  PZ.refreshCombined = function () {
+    var today = PZ.dayNumber();
+    var allDone = PZ.GAMES.every(function (g) { return PZ.isDoneToday(g.id); });
+    var c = PZ.getCombined();
+    if (!allDone || c.lastDoneDay === today) return c;
+    c.currentStreak = (c.lastDoneDay === today - 1) ? c.currentStreak + 1 : 1;
+    c.lastDoneDay = today;
+    c.totalDays += 1;
+    if (c.currentStreak > c.maxStreak) c.maxStreak = c.currentStreak;
+    write(PZ.combinedKey, c);
+    return c;
+  };
+
   /* ---------- UI helpers ---------- */
 
   var GAMES = [
@@ -196,6 +226,9 @@
     tick();
     return setInterval(tick, 1000);
   };
+
+  // Update the combined streak on every page load (idempotent per day).
+  PZ.refreshCombined();
 
   window.PZ = PZ;
 })();
