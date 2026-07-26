@@ -223,25 +223,24 @@ main {
 .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
 /* ---------- Wordle ---------- */
-.wg-board { display: grid; gap: 6px; justify-content: center; margin: 8px auto 16px; }
-.wg-row { display: grid; grid-template-columns: repeat(5, 56px); gap: 6px; }
+.wg-board { --cell: 52px; display: grid; gap: 6px; justify-content: center; margin: 8px auto 16px; }
+.wg-row { display: grid; gap: 6px; }
 .wg-cell {
-  width: 56px; height: 56px;
+  width: var(--cell); height: var(--cell);
   border: 2px solid var(--line);
   border-radius: 6px;
   display: grid; place-items: center;
-  font-size: 28px; font-weight: 800; text-transform: uppercase;
+  font-size: calc(var(--cell) * 0.5); font-weight: 800; text-transform: uppercase;
   color: var(--text);
 }
 .wg-cell.filled { border-color: var(--text-faint); animation: pop .1s ease; }
 .wg-cell.good { background: var(--good); border-color: var(--good); color: #fff; }
 .wg-cell.warn { background: var(--warn); border-color: var(--warn); color: #fff; }
 .wg-cell.miss { background: var(--miss); border-color: var(--miss); color: #fff; }
+.wg-cell.shake { animation: shake .35s ease; }
 @keyframes pop { 50% { transform: scale(1.08); } }
-@media (max-width: 380px) {
-  .wg-row { grid-template-columns: repeat(5, 48px); }
-  .wg-cell { width: 48px; height: 48px; font-size: 24px; }
-}
+@media (max-width: 400px) { .wg-board { --cell: 46px; } }
+@media (max-width: 340px) { .wg-board { --cell: 40px; } }
 
 .kbd { display: grid; gap: 7px; max-width: 500px; margin: 0 auto; }
 .kbd-row { display: flex; gap: 6px; justify-content: center; }
@@ -371,3 +370,58 @@ main {
 .dist-bar.cur { background: var(--good); }
 .countdown { text-align: center; color: var(--text-dim); font-size: 13px; margin-top: 10px; }
 .countdown b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* ---------- Home cards: level progress ---------- */
+.card-main { min-width: 0; }
+.card-progress { margin-top: 14px; }
+.bar {
+  height: 8px; border-radius: 999px; background: var(--bg-elev-2);
+  overflow: hidden; margin-bottom: 10px;
+}
+.bar span { display: block; height: 100%; border-radius: 999px; background: var(--good); transition: width .3s ease; }
+.badge.star { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+
+/* ---------- Level select grid ---------- */
+#progress-line { color: var(--accent); font-weight: 700; font-size: 13.5px; }
+.lv-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 9px;
+  max-width: 420px;
+  margin: 6px auto 0;
+}
+.lv {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-elev);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 17px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.lv.locked { color: var(--text-faint); background: var(--bg-elev-2); cursor: default; opacity: .7; }
+.lv.open { border-color: var(--line); }
+.lv.next { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
+.lv.done { background: color-mix(in srgb, var(--good) 20%, var(--bg-elev)); border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+.lv:active:not(.locked) { transform: translateY(1px); }
+.lvnum { line-height: 1; }
+.lvlock { font-size: 15px; }
+.lvstars {
+  position: absolute; bottom: 5px; left: 0; right: 0;
+  font-size: 9px; letter-spacing: 1px; color: var(--warn); line-height: 1;
+}
+@media (min-width: 440px) { .lv-grid { grid-template-columns: repeat(10, 1fr); max-width: 560px; } .lv { font-size: 14px; } }
+
+/* ---------- Play view header ---------- */
+.play-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.btn.back { padding: 8px 12px; font-size: 14px; }
+.level-label { font-weight: 800; font-size: 16px; margin-left: auto; color: var(--text-dim); }
+.cn-hint { text-align: center; color: var(--text-faint); font-size: 12.5px; margin: 0 0 8px; }
+
+/* ---------- Result overlay stars ---------- */
+.result-stars { text-align: center; font-size: 34px; letter-spacing: 6px; color: var(--warn); margin: 4px 0 6px; }
+.sheet .btn-row { margin-top: 10px; }

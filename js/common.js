@@ -1,47 +1,13 @@
-/* Shared utilities for the Daily Puzzles app.
+/* Shared utilities for the Puzzle Levels app.
    Exposed as a global `PZ` object so pages can be opened directly
    over file:// without ES-module CORS issues. */
 (function () {
   "use strict";
 
-  // Day 0 of the puzzle universe. Puzzle numbers count up from here.
-  var EPOCH = Date.UTC(2024, 0, 1); // 2024-01-01
-
   var PZ = {};
+  PZ.LEVELS = 100;
 
-  /* ---------- Dates ---------- */
-
-  // Local calendar date as YYYY-MM-DD.
-  PZ.dateKey = function (d) {
-    d = d || new Date();
-    var y = d.getFullYear();
-    var m = String(d.getMonth() + 1).padStart(2, "0");
-    var day = String(d.getDate()).padStart(2, "0");
-    return y + "-" + m + "-" + day;
-  };
-
-  // Whole days between the epoch and the given local date (>= 0 for today).
-  PZ.dayNumber = function (d) {
-    d = d || new Date();
-    var midnight = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-    return Math.floor((midnight - EPOCH) / 86400000);
-  };
-
-  PZ.prettyDate = function (d) {
-    d = d || new Date();
-    return d.toLocaleDateString(undefined, {
-      weekday: "long", month: "long", day: "numeric", year: "numeric"
-    });
-  };
-
-  // Milliseconds until next local midnight.
-  PZ.msUntilTomorrow = function () {
-    var now = new Date();
-    var next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
-    return next.getTime() - now.getTime();
-  };
-
-  /* ---------- Seeded RNG (deterministic per day) ---------- */
+  /* ---------- Seeded RNG (deterministic per level) ---------- */
 
   function xmur3(str) {
     var h = 1779033703 ^ str.length;
@@ -66,21 +32,12 @@
     };
   }
 
-  // Deterministic generator seeded from a string.
   PZ.rng = function (seedStr) {
     var seed = xmur3(String(seedStr));
     return mulberry32(seed());
   };
-
-  PZ.randInt = function (rng, min, max) {
-    return min + Math.floor(rng() * (max - min + 1));
-  };
-
-  PZ.pick = function (rng, arr) {
-    return arr[Math.floor(rng() * arr.length)];
-  };
-
-  // Fisher-Yates using a seeded rng; returns a new array.
+  PZ.randInt = function (rng, min, max) { return min + Math.floor(rng() * (max - min + 1)); };
+  PZ.pick = function (rng, arr) { return arr[Math.floor(rng() * arr.length)]; };
   PZ.shuffle = function (rng, arr) {
     var a = arr.slice();
     for (var i = a.length - 1; i > 0; i--) {
@@ -90,95 +47,47 @@
     return a;
   };
 
-  /* ---------- Storage: stats & daily state ---------- */
+  /* ---------- Storage: level progress ---------- */
 
   function read(key, fallback) {
-    try {
-      var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
-    } catch (e) { return fallback; }
+    try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    catch (e) { return fallback; }
   }
   function write(key, val) {
     try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
   }
 
-  PZ.statsKey = function (game) { return "pz:" + game + ":stats"; };
-  PZ.stateKey = function (game) { return "pz:" + game + ":state"; };
+  PZ.progKey = function (game) { return "pz:" + game + ":progress"; };
 
-  PZ.getStats = function (game) {
-    return read(PZ.statsKey(game), {
-      played: 0, won: 0, currentStreak: 0, maxStreak: 0,
-      lastWonDay: null, dist: {}
-    });
+  // { cleared: <highest sequentially-cleared level>, stars: { level: bestStars } }
+  PZ.getProgress = function (game) {
+    return read(PZ.progKey(game), { cleared: 0, stars: {} });
   };
+  PZ.isUnlocked = function (game, level) { return level <= PZ.getProgress(game).cleared + 1; };
+  PZ.isCleared = function (game, level) { return level <= PZ.getProgress(game).cleared; };
+  PZ.levelStars = function (game, level) { return PZ.getProgress(game).stars[level] || 0; };
 
-  // Record a finished game. `bucket` is optional (e.g. guess count for wordle).
-  PZ.recordResult = function (game, won, bucket) {
-    var s = PZ.getStats(game);
-    var today = PZ.dayNumber();
-    s.played += 1;
-    if (won) {
-      s.won += 1;
-      // Streak continues if last win was yesterday, resets otherwise.
-      if (s.lastWonDay === today - 1) s.currentStreak += 1;
-      else if (s.lastWonDay === today) { /* already counted today */ }
-      else s.currentStreak = 1;
-      s.lastWonDay = today;
-      if (s.currentStreak > s.maxStreak) s.maxStreak = s.currentStreak;
-      if (bucket != null) s.dist[bucket] = (s.dist[bucket] || 0) + 1;
-    } else {
-      s.currentStreak = 0;
-    }
-    write(PZ.statsKey(game), s);
-    return s;
+  // Record a win. Advances the cleared frontier when the next level is beaten,
+  // and keeps the best star rating for replays.
+  PZ.markCleared = function (game, level, stars) {
+    var p = PZ.getProgress(game);
+    p.stars[level] = Math.max(p.stars[level] || 0, stars || 1);
+    if (level === p.cleared + 1) p.cleared = level;
+    write(PZ.progKey(game), p);
+    return p;
   };
-
-  // Per-day saved state so a refresh resumes the same puzzle.
-  PZ.loadDaily = function (game) {
-    var st = read(PZ.stateKey(game), null);
-    if (st && st.day === PZ.dayNumber()) return st.data;
-    return null;
-  };
-  PZ.saveDaily = function (game, data) {
-    write(PZ.stateKey(game), { day: PZ.dayNumber(), data: data });
-  };
-
-  // Combined "finish all three today" streak across every game.
-  PZ.combinedKey = "pz:combined:stats";
-  PZ.getCombined = function () {
-    return read(PZ.combinedKey, {
-      lastDoneDay: null, currentStreak: 0, maxStreak: 0, totalDays: 0
-    });
-  };
-
-  // True when today's puzzle for `game` has been played to completion.
-  PZ.isDoneToday = function (game) {
-    var d = PZ.loadDaily(game);
-    return !!(d && d.finished);
-  };
-
-  // Records a combined day the first time all three puzzles are finished.
-  // Safe to call on every page load — it only writes when the day flips
-  // from incomplete to complete.
-  PZ.refreshCombined = function () {
-    var today = PZ.dayNumber();
-    var allDone = PZ.GAMES.every(function (g) { return PZ.isDoneToday(g.id); });
-    var c = PZ.getCombined();
-    if (!allDone || c.lastDoneDay === today) return c;
-    c.currentStreak = (c.lastDoneDay === today - 1) ? c.currentStreak + 1 : 1;
-    c.lastDoneDay = today;
-    c.totalDays += 1;
-    if (c.currentStreak > c.maxStreak) c.maxStreak = c.currentStreak;
-    write(PZ.combinedKey, c);
-    return c;
+  PZ.totalStars = function (game) {
+    var s = PZ.getProgress(game).stars, sum = 0;
+    for (var k in s) if (s.hasOwnProperty(k)) sum += s[k];
+    return sum;
   };
 
   /* ---------- UI helpers ---------- */
 
   var GAMES = [
-    { id: "wordle", name: "Word Guess", path: "wordle.html" },
-    { id: "connections", name: "Connections", path: "connections.html" },
-    { id: "digits", name: "Digits", path: "digits.html" }
+    { id: "wordle", name: "Word Guess", path: "wordle.html", icon: "🔤" },
+    { id: "connections", name: "Connections", path: "connections.html", icon: "🔗" },
+    { id: "digits", name: "Digits", path: "digits.html", icon: "🔢" }
   ];
   PZ.GAMES = GAMES;
 
@@ -186,49 +95,91 @@
     var el = document.getElementById("nav");
     if (!el) return;
     var links = GAMES.map(function (g) {
-      var cls = g.id === activeId ? "active" : "";
-      return '<a class="' + cls + '" href="' + g.path + '">' + g.name + "</a>";
+      return '<a class="' + (g.id === activeId ? "active" : "") + '" href="' + g.path + '">' + g.name + "</a>";
     }).join("");
     el.className = "nav";
     el.innerHTML =
-      '<a class="brand" href="index.html">🧩 <span>Daily</span></a>' +
-      '<div class="spacer"></div>' +
-      '<div class="links">' + links + "</div>";
+      '<a class="brand" href="index.html">🧩 <span>Levels</span></a>' +
+      '<div class="spacer"></div><div class="links">' + links + "</div>";
   };
 
   var toastTimer = null;
   PZ.toast = function (text, ms) {
     var t = document.createElement("div");
-    t.className = "toast";
-    t.textContent = text;
+    t.className = "toast"; t.textContent = text;
     document.body.appendChild(t);
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { t.remove(); }, ms || 1400);
   };
 
-  PZ.fmtCountdown = function (ms) {
-    var s = Math.max(0, Math.floor(ms / 1000));
-    var h = Math.floor(s / 3600);
-    var m = Math.floor((s % 3600) / 60);
-    var sec = s % 60;
-    function p(n) { return String(n).padStart(2, "0"); }
-    return p(h) + ":" + p(m) + ":" + p(sec);
-  };
-
-  // Runs a live countdown to midnight inside `el`, calling onZero once.
-  PZ.startCountdown = function (el, onZero) {
-    if (!el) return;
-    function tick() {
-      var ms = PZ.msUntilTomorrow();
-      el.innerHTML = "Next puzzles in <b>" + PZ.fmtCountdown(ms) + "</b>";
-      if (ms <= 0 && onZero) onZero();
+  // Render the 1..100 level grid for a game. `onPlay(level)` fires on tap.
+  PZ.renderLevelGrid = function (container, game, onPlay) {
+    var p = PZ.getProgress(game);
+    var html = "";
+    for (var l = 1; l <= PZ.LEVELS; l++) {
+      var cleared = l <= p.cleared;
+      var unlocked = l <= p.cleared + 1;
+      var next = unlocked && !cleared;
+      var cls = "lv " + (cleared ? "done" : unlocked ? "open" : "locked") + (next ? " next" : "");
+      var inner = unlocked
+        ? '<span class="lvnum">' + l + "</span>" +
+          (cleared ? '<span class="lvstars">' + stars(p.stars[l] || 1) + "</span>" : "")
+        : '<span class="lvlock">🔒</span>';
+      html += '<button class="' + cls + '" data-level="' + l + '"' + (unlocked ? "" : " disabled") + ">" + inner + "</button>";
     }
-    tick();
-    return setInterval(tick, 1000);
+    container.innerHTML = html;
+    container.querySelectorAll("button:not([disabled])").forEach(function (b) {
+      b.addEventListener("click", function () { onPlay(parseInt(b.getAttribute("data-level"), 10)); });
+    });
   };
 
-  // Update the combined streak on every page load (idempotent per day).
-  PZ.refreshCombined();
+  function stars(n) {
+    var s = "";
+    for (var i = 1; i <= 3; i++) s += i <= n ? "★" : "☆";
+    return s;
+  }
+  PZ.starString = stars;
+
+  // Full-screen level-complete overlay. opts: {game, level, won, title, detail,
+  // stars, onNext, onRetry, onLevels}
+  PZ.showResult = function (opts) {
+    var ov = document.getElementById("pz-result");
+    if (!ov) {
+      ov = document.createElement("div");
+      ov.id = "pz-result";
+      ov.className = "overlay";
+      document.body.appendChild(ov);
+    }
+    var last = opts.level >= PZ.LEVELS;
+    var starRow = opts.won
+      ? '<div class="result-stars">' + stars(opts.stars || 1) + "</div>"
+      : "";
+    var nextBtn = (opts.won && !last)
+      ? '<button class="btn primary" id="pz-next">Next level →</button>' : "";
+    var lastMsg = (opts.won && last) ? '<p class="result-line">🏆 You finished all 100 levels!</p>' : "";
+    ov.innerHTML =
+      '<div class="sheet">' +
+        '<h2>' + opts.title + "</h2>" +
+        starRow +
+        (opts.detail ? '<p class="result-line">' + opts.detail + "</p>" : "") +
+        lastMsg +
+        '<div class="btn-row">' +
+          nextBtn +
+          '<button class="btn" id="pz-retry">' + (opts.won ? "Replay" : "Try again") + "</button>" +
+          '<button class="btn" id="pz-levels">Levels</button>' +
+        "</div>" +
+      "</div>";
+    ov.hidden = false;
+    function close() { ov.hidden = true; }
+    var nb = document.getElementById("pz-next");
+    if (nb) nb.addEventListener("click", function () { close(); opts.onNext(); });
+    document.getElementById("pz-retry").addEventListener("click", function () { close(); opts.onRetry(); });
+    document.getElementById("pz-levels").addEventListener("click", function () { close(); opts.onLevels(); });
+  };
+  PZ.hideResult = function () {
+    var ov = document.getElementById("pz-result");
+    if (ov) ov.hidden = true;
+  };
 
   window.PZ = PZ;
 })();

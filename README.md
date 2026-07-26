@@ -1,84 +1,79 @@
-# Daily Puzzles
+# Puzzle Levels
 
-A small collection of daily brain puzzles in the spirit of the New York Times
-Games app. Three fresh puzzles are generated every day — the same for everyone —
-and your streaks and stats are saved locally in your browser.
+A small collection of puzzle games, each with **100 levels** that start easy and
+get progressively harder. Clear a level to unlock the next one. Your progress
+and star ratings are saved locally in your browser.
 
-No accounts, no backend, no build step. Just static HTML, CSS, and JavaScript.
+No accounts, no backend, no build step — just static HTML, CSS, and JavaScript.
 
-## The puzzles
+## The games
 
-| Puzzle | How it works |
-| --- | --- |
-| **🔤 Word Guess** | Guess the hidden 5-letter word in six tries, with green/yellow/gray feedback (a Wordle-style game). |
-| **🔗 Connections** | Sort 16 words into four secret groups of four. Four mistakes allowed. |
-| **🔢 Digits** | Combine six numbers using +, −, ×, and ÷ to reach the target. |
+| Game | How it works | Difficulty ramp |
+| --- | --- | --- |
+| **🔤 Word Guess** | Guess the hidden word in six tries, with green/yellow/gray feedback. | Word length grows 4 → 5 → 6 letters; common → obscure. |
+| **🔗 Connections** | Sort 16 words into four secret groups of four. | Easy distinct categories → tricky wordplay; fewer mistakes allowed later. |
+| **🔢 Digits** | Combine the numbers with +, −, ×, ÷ to reach the target. | More numbers (3 → 6) and larger targets. |
 
-Each puzzle is **deterministic per day**: the date seeds the generator, so every
-player gets the same puzzle, and a new set unlocks at local midnight. A live
-countdown to the next puzzles appears when you finish.
+Each level is **deterministic** — level *N* is always the same puzzle — and every
+Digits level is generated so a solution is guaranteed to exist. Beat a level to
+earn 1–3 **stars** based on how cleanly you solved it.
 
 ## Running it
 
-It's a fully static site — no install or build required.
+Fully static — no install or build required.
 
-- **Quickest:** open `index.html` directly in your browser.
-- **Recommended (any static server):**
+- **Quickest:** open `index.html` in your browser.
+- **Any static server:**
   ```bash
-  python3 -m http.server 8000
-  # then visit http://localhost:8000
+  python3 -m http.server 8000    # then visit http://localhost:8000
   ```
 
-Because there is no backend, deploying is as simple as hosting these files on any
-static host (GitHub Pages, Netlify, etc.).
+It also deploys automatically to GitHub Pages on every push to `main`
+(see `.github/workflows/pages.yml`).
 
 ## How it's built
 
 ```
-index.html            Home screen with the three puzzle cards
-wordle.html           Word Guess
-connections.html      Connections
-digits.html           Digits
-css/main.css          Shared styling (dark + light theme aware)
-js/common.js          Shared utilities: date/day numbering, seeded RNG,
-                      localStorage stats & streaks, nav, countdown
-js/home.js            Home screen logic
-js/wordle.js          Word Guess logic
-js/connections.js     Connections logic
-js/digits.js          Digits logic (deterministic, always-solvable generator)
-data/wordle.js        Curated 5-letter answer list
-data/connections.js   Pool of themed groups across four difficulty tiers
+index.html                     Home screen with the three game cards
+wordle.html                    Word Guess (level select + play)
+connections.html               Connections (level select + play)
+digits.html                    Digits (level select + play)
+css/main.css                   Shared styling (dark + light theme aware)
+js/common.js                   Seeded RNG, level progress + stars,
+                               level-select grid, result screen
+js/home.js                     Home screen logic
+js/wordle.js                   Word Guess levels
+js/connections.js              Connections levels
+js/digits.js                   Digits levels
+data/wordle.js                 Difficulty-ordered word bands (4/5/6 letters)
+data/connections.js            Pool of 60 themed groups across four tiers
 ```
 
 Scripts are plain classic scripts sharing a global `PZ` namespace (rather than ES
 modules) so the pages work even when opened directly over `file://`.
 
-### Determinism
+### Determinism & difficulty
 
-`js/common.js` assigns each day an integer "day number" counted from a fixed
-epoch. That number seeds a small `xmur3` + `mulberry32` PRNG, which drives:
+`js/common.js` provides a small `xmur3` + `mulberry32` seeded PRNG. Each game
+seeds it with the level number, so a given level always produces the same puzzle
+while difficulty scales with the level:
 
-- **Word Guess** — walks the answer list by day number (no repeats until the list
-  is exhausted).
-- **Connections** — picks one group from each difficulty tier, guaranteeing 16
-  distinct words.
-- **Digits** — folds six random numbers down with valid operations to derive a
-  target, so a solution is always guaranteed to exist.
+- **Word Guess** walks difficulty-ordered word lists, moving to longer bands as
+  levels rise.
+- **Connections** draws its four groups from a difficulty *tier window* that
+  climbs with the level, and lowers the mistake allowance in later levels.
+- **Digits** folds a growing set of numbers down to a target with valid
+  operations, guaranteeing solvability.
 
 ### Saved data
 
-Everything is stored in `localStorage` on your device:
-
-- `pz:<game>:stats` — games played, win %, current streak, max streak, and (for
-  Word Guess) the guess distribution.
-- `pz:<game>:state` — today's in-progress or finished board, so a refresh resumes
-  where you left off.
-
-Nothing leaves your browser.
+Everything is stored in `localStorage` on your device under
+`pz:<game>:progress` — the highest level cleared plus the best star rating for
+each level. Nothing leaves your browser.
 
 ## Ideas for later
 
-- More puzzle types (mini crossword, a Strands-style word search)
-- Larger answer/dictionary lists and true dictionary validation for guesses
-- Optional accounts + cross-device sync
-- A combined "play all three" streak
+- More games (mini crossword, a Strands-style word search)
+- Larger word/answer lists and real dictionary validation for guesses
+- Daily challenge mode alongside the level ladder
+- Cloud sync of progress across devices

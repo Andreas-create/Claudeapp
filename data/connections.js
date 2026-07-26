@@ -1,9 +1,9 @@
-/* Pool of themed groups for Connections.
-   Each day the game deterministically picks one group from each
-   difficulty tier (0 = easiest yellow ... 3 = trickiest purple).
-   `d` is the difficulty tier. Words are single tokens, shown uppercased. */
+/* Pool of themed groups for Connections, tagged by difficulty tier:
+   0 = easiest (yellow), 1 = green, 2 = blue, 3 = trickiest (purple).
+   Each level draws four non-overlapping groups from a tier window that
+   rises with the level number. */
 window.CONNECTIONS_GROUPS = [
-  // ----- tier 0 (yellow, most straightforward) -----
+  // ----- tier 0 (straightforward categories) -----
   { d: 0, cat: "Citrus fruits", words: ["LEMON", "LIME", "ORANGE", "MANGO"] },
   { d: 0, cat: "Colors", words: ["RED", "BLUE", "GREEN", "PINK"] },
   { d: 0, cat: "Farm animals", words: ["COW", "GOAT", "SHEEP", "HORSE"] },
@@ -14,8 +14,13 @@ window.CONNECTIONS_GROUPS = [
   { d: 0, cat: "Ocean animals", words: ["WHALE", "SHARK", "CRAB", "SEAL"] },
   { d: 0, cat: "Kitchen tools", words: ["WHISK", "LADLE", "GRATER", "PEELER"] },
   { d: 0, cat: "Planets", words: ["MARS", "VENUS", "SATURN", "NEPTUNE"] },
+  { d: 0, cat: "Vegetables", words: ["CARROT", "POTATO", "CELERY", "SPINACH"] },
+  { d: 0, cat: "Insects", words: ["ANT", "BEE", "MOTH", "WASP"] },
+  { d: 0, cat: "Metals", words: ["GOLD", "IRON", "COPPER", "TIN"] },
+  { d: 0, cat: "Trees", words: ["OAK", "PINE", "MAPLE", "BIRCH"] },
+  { d: 0, cat: "Instruments", words: ["PIANO", "VIOLIN", "FLUTE", "CELLO"] },
 
-  // ----- tier 1 (green) -----
+  // ----- tier 1 (needs a moment's thought) -----
   { d: 1, cat: "Card games", words: ["POKER", "BRIDGE", "HEARTS", "RUMMY"] },
   { d: 1, cat: "Types of dance", words: ["SALSA", "TANGO", "SWING", "WALTZ"] },
   { d: 1, cat: "Board games", words: ["CHESS", "SORRY", "RISK", "CLUE"] },
@@ -26,8 +31,13 @@ window.CONNECTIONS_GROUPS = [
   { d: 1, cat: "Guitar parts", words: ["FRET", "NECK", "BRIDGE", "STRING"] },
   { d: 1, cat: "Shades of blue", words: ["NAVY", "TEAL", "COBALT", "AZURE"] },
   { d: 1, cat: "Pasta shapes", words: ["PENNE", "ZITI", "FUSILLI", "ROTINI"] },
+  { d: 1, cat: "Types of soup", words: ["TOMATO", "CHICKEN", "LENTIL", "MISO"] },
+  { d: 1, cat: "Martial arts", words: ["JUDO", "KARATE", "SUMO", "AIKIDO"] },
+  { d: 1, cat: "Sailing terms", words: ["BOW", "STERN", "MAST", "HULL"] },
+  { d: 1, cat: "Gemstones", words: ["RUBY", "PEARL", "OPAL", "JADE"] },
+  { d: 1, cat: "Currencies", words: ["DOLLAR", "EURO", "YEN", "PESO"] },
 
-  // ----- tier 2 (blue) -----
+  // ----- tier 2 (compound / prefix wordplay) -----
   { d: 2, cat: "___ ball", words: ["BASE", "FOOT", "BASKET", "MEAT"] },
   { d: 2, cat: "Fire ___", words: ["PLACE", "WORK", "FLY", "WOOD"] },
   { d: 2, cat: "Sun ___", words: ["FLOWER", "SHINE", "RISE", "BURN"] },
@@ -38,8 +48,13 @@ window.CONNECTIONS_GROUPS = [
   { d: 2, cat: "Poker hands", words: ["FLUSH", "STRAIGHT", "PAIR", "FULL"] },
   { d: 2, cat: "Anagrams of STOP", words: ["POTS", "TOPS", "OPTS", "SPOT"] },
   { d: 2, cat: "Greek letters", words: ["ALPHA", "DELTA", "SIGMA", "OMEGA"] },
+  { d: 2, cat: "Water ___", words: ["MELON", "PROOF", "MARK", "FRONT"] },
+  { d: 2, cat: "Snow ___", words: ["BALL", "FLAKE", "MAN", "STORM"] },
+  { d: 2, cat: "___ work", words: ["HOME", "NET", "FRAME", "TEAM"] },
+  { d: 2, cat: "Book ___", words: ["MARK", "CASE", "SHELF", "WORM"] },
+  { d: 2, cat: "___ berry", words: ["BLUE", "STRAW", "BLACK", "RASP"] },
 
-  // ----- tier 3 (purple, wordplay / twist) -----
+  // ----- tier 3 (twists, hidden words, anagrams) -----
   { d: 3, cat: "___ board", words: ["KEY", "CARD", "SURF", "DASH"] },
   { d: 3, cat: "Words before HOUSE", words: ["LIGHT", "GREEN", "WARE", "OUT"] },
   { d: 3, cat: "Hidden body parts", words: ["SHIN", "EARL", "HIPS", "RIBBON"] },
@@ -49,5 +64,10 @@ window.CONNECTIONS_GROUPS = [
   { d: 3, cat: "Double letters", words: ["BALLOON", "COFFEE", "MIRROR", "PUZZLE"] },
   { d: 3, cat: "___ PIT", words: ["ARM", "COCK", "OUT", "TAR"] },
   { d: 3, cat: "Homophones of letters", words: ["BEE", "SEA", "WHY", "QUEUE"] },
-  { d: 3, cat: "TABLE ___", words: ["CLOTH", "SPOON", "TOP", "WARE"] }
+  { d: 3, cat: "TABLE ___", words: ["CLOTH", "SPOON", "TOP", "LAND"] },
+  { d: 3, cat: "Anagrams of LISTEN", words: ["SILENT", "TINSEL", "INLETS", "ENLIST"] },
+  { d: 3, cat: "___ fly", words: ["BUTTER", "DRAGON", "HORSE", "MAY"] },
+  { d: 3, cat: "Hidden animals", words: ["CATALOG", "DOGMA", "RATIO", "OWLET"] },
+  { d: 3, cat: "Silent B words", words: ["THUMB", "LAMB", "CRUMB", "DEBT"] },
+  { d: 3, cat: "___ cake", words: ["CUP", "PAN", "FISH", "BEEF"] }
 ];
