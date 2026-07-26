@@ -97,6 +97,7 @@
     var links = GAMES.map(function (g) {
       return '<a class="' + (g.id === activeId ? "active" : "") + '" href="' + g.path + '">' + g.name + "</a>";
     }).join("");
+    links += '<a class="' + (activeId === "peru" ? "active" : "") + '" href="peru.html">🇵🇪 Peru</a>';
     el.className = "nav";
     el.innerHTML =
       '<a class="brand" href="index.html">🧩 <span>Levels</span></a>' +
@@ -112,14 +113,16 @@
     toastTimer = setTimeout(function () { t.remove(); }, ms || 1400);
   };
 
-  // Render the 1..100 level grid for a game. `onPlay(level)` fires on tap.
-  PZ.renderLevelGrid = function (container, game, onPlay) {
+  // Render the level grid for a game. `onPlay(level)` fires on tap.
+  // `count` defaults to the 100-level ladder; packs pass their own size.
+  PZ.renderLevelGrid = function (container, game, onPlay, count, allOpen) {
+    count = count || PZ.LEVELS;
     var p = PZ.getProgress(game);
     var html = "";
-    for (var l = 1; l <= PZ.LEVELS; l++) {
+    for (var l = 1; l <= count; l++) {
       var cleared = l <= p.cleared;
-      var unlocked = l <= p.cleared + 1;
-      var next = unlocked && !cleared;
+      var unlocked = allOpen || l <= p.cleared + 1;
+      var next = !allOpen && unlocked && !cleared;
       var cls = "lv " + (cleared ? "done" : unlocked ? "open" : "locked") + (next ? " next" : "");
       var inner = unlocked
         ? '<span class="lvnum">' + l + "</span>" +
@@ -143,9 +146,9 @@
   // Play-view header with a Levels button and prev/next level arrows.
   // opts: {game, level, label, onGoto(level), onLevels}
   PZ.renderPlayNav = function (container, opts) {
-    var g = opts.game, lv = opts.level;
+    var g = opts.game, lv = opts.level, max = opts.max || PZ.LEVELS;
     var prevOff = lv <= 1;
-    var nextOff = lv >= PZ.LEVELS || !PZ.isUnlocked(g, lv + 1);
+    var nextOff = lv >= max || (!opts.allOpen && !PZ.isUnlocked(g, lv + 1));
     container.className = "play-head";
     container.innerHTML =
       '<button class="btn back" data-act="levels">▦ Levels</button>' +
@@ -169,13 +172,15 @@
       ov.className = "overlay";
       document.body.appendChild(ov);
     }
-    var last = opts.level >= PZ.LEVELS;
+    var last = opts.level >= (opts.max || PZ.LEVELS);
     var starRow = opts.won
       ? '<div class="result-stars">' + stars(opts.stars || 1) + "</div>"
       : "";
     var nextBtn = (opts.won && !last)
       ? '<button class="btn primary" id="pz-next">Next level →</button>' : "";
-    var lastMsg = (opts.won && last) ? '<p class="result-line">🏆 You finished all 100 levels!</p>' : "";
+    var lastMsg = (opts.won && last)
+      ? '<p class="result-line">🏆 ' + (opts.finalMsg || "You finished all " + (opts.max || PZ.LEVELS) + " levels!") + "</p>"
+      : "";
     ov.innerHTML =
       '<div class="sheet">' +
         '<h2>' + opts.title + "</h2>" +

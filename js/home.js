@@ -35,4 +35,27 @@
   }).join("");
 
   document.getElementById("cards").innerHTML = html;
+
+  // Themed packs (independent puzzle sets)
+  var peru = PZ.getProgress("peru");
+  var peruStars = PZ.totalStars("peru");
+  var peruPct = Math.round((peru.cleared / 5) * 100);
+  document.getElementById("packs").innerHTML =
+    '<a class="card" href="peru.html">' +
+      '<div class="card-top">' +
+        '<div class="card-icon">🇵🇪</div>' +
+        '<div class="card-main">' +
+          '<p class="card-title">Peru Connections</p>' +
+          '<p class="card-desc">Five hard puzzles on Peruvian history, food, geography, arts and nature.</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-progress">' +
+        '<div class="bar"><span style="width:' + peruPct + '%"></span></div>' +
+        '<div class="card-meta">' +
+          '<span class="badge">' + peru.cleared + ' / 5 solved</span>' +
+          (peruStars ? '<span class="badge star">★ ' + peruStars + '</span>' : '') +
+          '<span class="card-cta">' + (peru.cleared >= 5 ? "Completed ✓" : peru.cleared ? "Continue →" : "Play →") + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</a>';
 })();
