@@ -15,30 +15,58 @@
   var dotsEl = document.getElementById("dots");
   var submitBtn = document.getElementById("submit-btn");
 
-  function levelConfig(level) {
-    if (level <= 25) return { tiers: [0, 1], mistakes: 5 };
-    if (level <= 50) return { tiers: [0, 1, 2], mistakes: 4 };
-    if (level <= 75) return { tiers: [1, 2, 3], mistakes: 4 };
-    return { tiers: [2, 3], mistakes: 3 };
+  // Difficulty ramp: how many of the four groups come from each tier.
+  // Starts at green+blue (old ~level 50 feel) and climbs to mostly purple.
+  function composition(level) {
+    if (level <= 25) return { 1: 2, 2: 2, 3: 0 };
+    if (level <= 50) return { 1: 1, 2: 2, 3: 1 };
+    if (level <= 75) return { 1: 0, 2: 2, 3: 2 };
+    return { 1: 0, 2: 1, 3: 3 };
+  }
+  function mistakesFor(level) { return level <= 40 ? 4 : level <= 80 ? 3 : 2; }
+
+  // Deal groups to every level from shuffled per-tier decks without
+  // replacement, so a category never repeats between nearby levels and
+  // reuse is spread as far apart as the pool allows. Deterministic, run once.
+  var ASSIGN = null;
+  function assignments() {
+    if (ASSIGN) return ASSIGN;
+    ASSIGN = {};
+    var decks = {}, ptr = {};
+    [1, 2, 3].forEach(function (t) {
+      decks[t] = PZ.shuffle(PZ.rng("cn:deck:" + t), POOL.filter(function (g) { return g.d === t; }));
+      ptr[t] = 0;
+    });
+    function draw(preferTier, used) {
+      var tiers = [preferTier, 3, 2, 1];
+      for (var ti = 0; ti < tiers.length; ti++) {
+        var t = tiers[ti], deck = decks[t];
+        for (var scan = 0; scan < deck.length; scan++) {
+          var g = deck[(ptr[t] + scan) % deck.length];
+          if (!g.words.some(function (w) { return used[w]; })) {
+            ptr[t] = (ptr[t] + scan + 1) % deck.length;
+            return g;
+          }
+        }
+      }
+      return decks[preferTier][ptr[preferTier]++ % decks[preferTier].length];
+    }
+    for (var level = 1; level <= PZ.LEVELS; level++) {
+      var c = composition(level), chosen = [], used = {};
+      [3, 2, 1].forEach(function (t) {
+        for (var i = 0; i < c[t]; i++) {
+          var g = draw(t, used);
+          chosen.push(g);
+          g.words.forEach(function (w) { used[w] = true; });
+        }
+      });
+      ASSIGN[level] = chosen;
+    }
+    return ASSIGN;
   }
 
-  // Build the four groups for a level (deterministic, no shared words).
   function buildGroups(level) {
-    var cfg = levelConfig(level);
-    var rng = PZ.rng("connections:" + level);
-    function gather(tiers) { return PZ.shuffle(rng, POOL.filter(function (g) { return tiers.indexOf(g.d) !== -1; })); }
-    var candidates = gather(cfg.tiers);
-    var chosen = [], used = {};
-    function tryAdd(list) {
-      for (var i = 0; i < list.length && chosen.length < 4; i++) {
-        var g = list[i];
-        if (g.words.some(function (w) { return used[w]; })) continue;
-        chosen.push(g); g.words.forEach(function (w) { used[w] = true; });
-      }
-    }
-    tryAdd(candidates);
-    if (chosen.length < 4) tryAdd(gather([0, 1, 2, 3])); // safety net
-    return { groups: chosen, mistakes: cfg.mistakes };
+    return { groups: assignments()[level].slice(), mistakes: mistakesFor(level) };
   }
 
   // ----- active level state -----
