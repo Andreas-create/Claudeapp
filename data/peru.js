@@ -1,7 +1,7 @@
-/* Peruvian Connections pack — 5 hand-authored, high-difficulty puzzles.
-   Each puzzle has four groups of four; `d` (0=yellow easiest … 3=purple
-   trickiest) sets the reveal colour. Trap words are chosen so several
-   tiles look like they belong to more than one group. */
+/* Peruvian Connections pack — 10 hand-authored, high-difficulty puzzles.
+   Puzzles 1-5 are the original pack; 6-10 go deeper and harder with no
+   category repeated anywhere in the pack. Each puzzle has four groups of
+   four; `d` (0=yellow easiest … 3=purple trickiest) sets the reveal colour. */
 window.PERU_PUZZLES = [
   {
     title: "Ancient Peru",
@@ -46,6 +46,52 @@ window.PERU_PUZZLES = [
       { d: 1, cat: "Amazon animals", words: ["JAGUAR", "ANACONDA", "PIRANHA", "CAIMAN"] },
       { d: 2, cat: "Crops domesticated in Peru", words: ["POTATO", "MAIZE", "QUINOA", "COCA"] },
       { d: 3, cat: "Other Andean wildlife", words: ["CONDOR", "VIZCACHA", "TARUCA", "CUY"] }
+    ]
+  },
+
+  {
+    title: "The Inca World",
+    groups: [
+      { d: 0, cat: "Quechua institutions", words: ["AYLLU", "MITA", "QUIPU", "CHASQUI"] },
+      { d: 1, cat: "Inca deities", words: ["INTI", "VIRACOCHA", "PACHAMAMA", "MAMAQUILLA"] },
+      { d: 2, cat: "Roads & engineering", words: ["QHAPAQNAN", "TAMBO", "ANDEN", "APACHETA"] },
+      { d: 3, cat: "The four suyus", words: ["CHINCHAYSUYU", "ANTISUYU", "COLLASUYU", "CONTISUYU"] }
+    ]
+  },
+  {
+    title: "The Peruvian Table II",
+    groups: [
+      { d: 0, cat: "Street snacks", words: ["PICARONES", "CHURROS", "EMOLIENTE", "SALCHIPAPA"] },
+      { d: 1, cat: "Native fruits", words: ["LUCUMA", "CHIRIMOYA", "AGUAYMANTO", "GRANADILLA"] },
+      { d: 2, cat: "Amazonian dishes", words: ["JUANE", "TACACHO", "PATARASHCA", "CECINA"] },
+      { d: 3, cat: "Varieties of aji", words: ["AMARILLO", "PANCA", "LIMO", "MIRASOL"] }
+    ]
+  },
+  {
+    title: "Beyond Cusco",
+    groups: [
+      { d: 0, cat: "Departments of Peru", words: ["LORETO", "CAJAMARCA", "AYACUCHO", "JUNIN"] },
+      { d: 1, cat: "Archaeological sites", words: ["CHANCHAN", "KUELAP", "CARAL", "SIPAN"] },
+      { d: 2, cat: "Andean peaks", words: ["AMPATO", "YERUPAJA", "AUSANGATE", "ALPAMAYO"] },
+      { d: 3, cat: "Titicaca islands & ruins", words: ["TAQUILE", "AMANTANI", "UROS", "SILLUSTANI"] }
+    ]
+  },
+  {
+    title: "Culture, Deep Cut",
+    groups: [
+      { d: 0, cat: "Independence-era heroes", words: ["GRAU", "BOLOGNESI", "CACERES", "AMARU"] },
+      { d: 1, cat: "Poets & writers", words: ["VALLEJO", "ARGUEDAS", "ALEGRIA", "PALMA"] },
+      { d: 2, cat: "Criollo & Afro singers", words: ["GRANDA", "BACA", "PINGLO", "SANTACRUZ"] },
+      { d: 3, cat: "Peruvian music genres", words: ["VALS", "LANDO", "ZAMACUECA", "YARAVI"] }
+    ]
+  },
+  {
+    title: "Nature & Nation",
+    groups: [
+      { d: 0, cat: "Nazca Lines figures", words: ["MONKEY", "SPIDER", "HERON", "WHALE"] },
+      { d: 1, cat: "National symbols", words: ["CANTUTA", "QUINA", "TUNKI", "SOL"] },
+      { d: 2, cat: "Amazon river fish", words: ["PAICHE", "DORADO", "ZUNGARO", "GAMITANA"] },
+      { d: 3, cat: "Medicinal plants", words: ["AYAHUASCA", "CHACRUNA", "SANPEDRO", "TOE"] }
     ]
   }
 ];

@@ -39,7 +39,8 @@
   // Themed packs (independent puzzle sets)
   var peru = PZ.getProgress("peru");
   var peruStars = PZ.totalStars("peru");
-  var peruPct = Math.round((peru.cleared / 5) * 100);
+  var PERU_TOTAL = 10;
+  var peruPct = Math.round((peru.cleared / PERU_TOTAL) * 100);
   document.getElementById("packs").innerHTML =
     '<a class="card" href="peru.html">' +
       '<div class="card-top">' +
@@ -52,9 +53,9 @@
       '<div class="card-progress">' +
         '<div class="bar"><span style="width:' + peruPct + '%"></span></div>' +
         '<div class="card-meta">' +
-          '<span class="badge">' + peru.cleared + ' / 5 solved</span>' +
+          '<span class="badge">' + peru.cleared + ' / ' + PERU_TOTAL + ' solved</span>' +
           (peruStars ? '<span class="badge star">★ ' + peruStars + '</span>' : '') +
-          '<span class="card-cta">' + (peru.cleared >= 5 ? "Completed ✓" : peru.cleared ? "Continue →" : "Play →") + '</span>' +
+          '<span class="card-cta">' + (peru.cleared >= PERU_TOTAL ? "Completed ✓" : peru.cleared ? "Continue →" : "Play →") + '</span>' +
         '</div>' +
       '</div>' +
     '</a>';

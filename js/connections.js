@@ -16,48 +16,60 @@
   var submitBtn = document.getElementById("submit-btn");
 
   // Difficulty ramp: how many of the four groups come from each tier.
-  // Starts at green+blue (old ~level 50 feel) and climbs to mostly purple.
+  // Starts green+blue and climbs to blue+purple; capped at 2 per tier so
+  // the pool is large enough to keep categories 20+ levels apart.
   function composition(level) {
     if (level <= 25) return { 1: 2, 2: 2, 3: 0 };
     if (level <= 50) return { 1: 1, 2: 2, 3: 1 };
     if (level <= 75) return { 1: 0, 2: 2, 3: 2 };
-    return { 1: 0, 2: 1, 3: 3 };
+    return { 1: 0, 2: 2, 3: 2 };
   }
   function mistakesFor(level) { return level <= 40 ? 4 : level <= 80 ? 3 : 2; }
 
-  // Deal groups to every level from shuffled per-tier decks without
-  // replacement, so a category never repeats between nearby levels and
-  // reuse is spread as far apart as the pool allows. Deterministic, run once.
+  var GAP = 20; // minimum levels between reuse of any category
+
+  // Assign four groups to every level, deterministically. A least-recently-
+  // used picker enforces that no category repeats within GAP levels (falling
+  // back to the oldest-used group only if the pool can't satisfy it).
   var ASSIGN = null;
   function assignments() {
     if (ASSIGN) return ASSIGN;
     ASSIGN = {};
-    var decks = {}, ptr = {};
-    [1, 2, 3].forEach(function (t) {
-      decks[t] = PZ.shuffle(PZ.rng("cn:deck:" + t), POOL.filter(function (g) { return g.d === t; }));
-      ptr[t] = 0;
-    });
-    function draw(preferTier, used) {
-      var tiers = [preferTier, 3, 2, 1];
-      for (var ti = 0; ti < tiers.length; ti++) {
-        var t = tiers[ti], deck = decks[t];
-        for (var scan = 0; scan < deck.length; scan++) {
-          var g = deck[(ptr[t] + scan) % deck.length];
-          if (!g.words.some(function (w) { return used[w]; })) {
-            ptr[t] = (ptr[t] + scan + 1) % deck.length;
-            return g;
-          }
-        }
+    var byTier = { 1: [], 2: [], 3: [] };
+    POOL.forEach(function (g) { if (byTier[g.d]) byTier[g.d].push(g); });
+    [1, 2, 3].forEach(function (t) { byTier[t] = PZ.shuffle(PZ.rng("cn:pool:" + t), byTier[t]); });
+    var lastUsed = {}; // category -> last level it appeared on
+
+    function pick(tier, level, used) {
+      var deck = byTier[tier], best = null, bestLast = Infinity, i, g, lu;
+      // prefer a group not used within GAP levels, choosing the oldest
+      for (i = 0; i < deck.length; i++) {
+        g = deck[i];
+        if (g.words.some(function (w) { return used[w]; })) continue;
+        lu = lastUsed[g.cat];
+        if (lu !== undefined && level - lu <= GAP) continue;
+        var v = (lu === undefined) ? -1 : lu;
+        if (v < bestLast) { bestLast = v; best = g; }
       }
-      return decks[preferTier][ptr[preferTier]++ % decks[preferTier].length];
+      if (best) return best;
+      // fallback: oldest non-clashing group regardless of GAP
+      for (i = 0; i < deck.length; i++) {
+        g = deck[i];
+        if (g.words.some(function (w) { return used[w]; })) continue;
+        lu = lastUsed[g.cat]; var v2 = (lu === undefined) ? -1 : lu;
+        if (v2 < bestLast) { bestLast = v2; best = g; }
+      }
+      return best || deck[0];
     }
+
     for (var level = 1; level <= PZ.LEVELS; level++) {
       var c = composition(level), chosen = [], used = {};
-      [3, 2, 1].forEach(function (t) {
+      [1, 2, 3].forEach(function (t) {
         for (var i = 0; i < c[t]; i++) {
-          var g = draw(t, used);
+          var g = pick(t, level, used);
           chosen.push(g);
           g.words.forEach(function (w) { used[w] = true; });
+          lastUsed[g.cat] = level;
         }
       });
       ASSIGN[level] = chosen;

@@ -1,10 +1,10 @@
 /* Pool of themed groups for Connections, tagged by difficulty tier:
    1 = green (recognisable categories), 2 = blue (compound/wordplay),
    3 = purple (anagrams, hidden words, homophones, tricky compounds).
-   Levels deal groups from these tiers without replacement, so categories
-   don't repeat between nearby levels. */
+   44 groups per tier so the level scheduler can keep every category at
+   least 20 levels apart. */
 window.CONNECTIONS_GROUPS = [
-  // ===== tier 1 — categories that need a moment's thought =====
+  // ===== tier 1 — categories =====
   { d: 1, cat: "Card games", words: ["POKER", "BRIDGE", "HEARTS", "RUMMY"] },
   { d: 1, cat: "Ballroom dances", words: ["SALSA", "TANGO", "RUMBA", "WALTZ"] },
   { d: 1, cat: "Chess pieces", words: ["PAWN", "ROOK", "BISHOP", "KNIGHT"] },
@@ -35,8 +35,22 @@ window.CONNECTIONS_GROUPS = [
   { d: 1, cat: "Fabrics", words: ["COTTON", "LINEN", "DENIM", "VELVET"] },
   { d: 1, cat: "Edible nuts", words: ["ALMOND", "CASHEW", "PECAN", "PISTACHIO"] },
   { d: 1, cat: "Winter Olympic sports", words: ["LUGE", "CURLING", "BIATHLON", "SKELETON"] },
+  { d: 1, cat: "Planets", words: ["MERCURY", "VENUS", "JUPITER", "SATURN"] },
+  { d: 1, cat: "Oceans", words: ["PACIFIC", "ATLANTIC", "INDIAN", "ARCTIC"] },
+  { d: 1, cat: "Continents", words: ["AFRICA", "EUROPE", "ASIA", "OCEANIA"] },
+  { d: 1, cat: "Zodiac signs", words: ["ARIES", "LEO", "VIRGO", "LIBRA"] },
+  { d: 1, cat: "Shades of green", words: ["OLIVE", "EMERALD", "JADE", "MINT"] },
+  { d: 1, cat: "Coffee beans", words: ["ARABICA", "ROBUSTA", "LIBERICA", "EXCELSA"] },
+  { d: 1, cat: "Citrus fruits", words: ["LEMON", "LIME", "KUMQUAT", "POMELO"] },
+  { d: 1, cat: "Berries", words: ["STRAWBERRY", "BLUEBERRY", "GOOSEBERRY", "ELDERBERRY"] },
+  { d: 1, cat: "Sea creatures", words: ["OCTOPUS", "SQUID", "LOBSTER", "URCHIN"] },
+  { d: 1, cat: "Big cats", words: ["LION", "TIGER", "LEOPARD", "CHEETAH"] },
+  { d: 1, cat: "Deciduous trees", words: ["OAK", "MAPLE", "BIRCH", "ASPEN"] },
+  { d: 1, cat: "Spices", words: ["CUMIN", "PAPRIKA", "TURMERIC", "CARDAMOM"] },
+  { d: 1, cat: "Music genres", words: ["JAZZ", "BLUES", "REGGAE", "TECHNO"] },
+  { d: 1, cat: "Pastries", words: ["ECLAIR", "CROISSANT", "DANISH", "STRUDEL"] },
 
-  // ===== tier 2 — compound-word families & wordplay =====
+  // ===== tier 2 — compound-word families =====
   { d: 2, cat: "___ ball", words: ["FOOT", "BASKET", "MEAT", "ODD"] },
   { d: 2, cat: "Fire ___", words: ["PLACE", "WORK", "FLY", "WOOD"] },
   { d: 2, cat: "Sun ___", words: ["FLOWER", "SHINE", "RISE", "BURN"] },
@@ -63,14 +77,28 @@ window.CONNECTIONS_GROUPS = [
   { d: 2, cat: "Eye ___", words: ["BROW", "LASH", "LID", "SORE"] },
   { d: 2, cat: "Green ___", words: ["HOUSE", "HORN", "LAND", "GAGE"] },
   { d: 2, cat: "Tooth ___", words: ["PASTE", "ACHE", "BRUSH", "PICK"] },
-  { d: 2, cat: "Foot ___", words: ["PRINT", "NOTE", "STEP", "HILL"] },
+  { d: 2, cat: "Foot ___", words: ["PRINT", "STEP", "HILL", "LOOSE"] },
   { d: 2, cat: "Moon ___", words: ["WALK", "SHINE", "BEAM", "LIT"] },
   { d: 2, cat: "Ear ___", words: ["RING", "DRUM", "LOBE", "WIG"] },
   { d: 2, cat: "___ paper", words: ["NEWS", "SAND", "WALL", "FLY"] },
+  { d: 2, cat: "Back ___", words: ["BONE", "PACK", "GROUND", "FIRE"] },
+  { d: 2, cat: "Down ___", words: ["LOAD", "TOWN", "FALL", "STAIRS"] },
+  { d: 2, cat: "Up ___", words: ["ROAR", "RIGHT", "GRADE", "SET"] },
+  { d: 2, cat: "Out ___", words: ["BREAK", "SIDE", "LOOK", "POST"] },
+  { d: 2, cat: "___ bird", words: ["BLACK", "MOCKING", "LADY", "THUNDER"] },
+  { d: 2, cat: "___ box", words: ["MAIL", "SAND", "TOOL", "JUKE"] },
+  { d: 2, cat: "Air ___", words: ["PORT", "LINE", "PLANE", "FIELD"] },
+  { d: 2, cat: "___ room", words: ["BED", "BATH", "CLASS", "MUSH"] },
+  { d: 2, cat: "Wind ___", words: ["MILL", "SURF", "SHIELD", "PIPE"] },
+  { d: 2, cat: "___ line", words: ["COAST", "OUT", "DEAD", "GUIDE"] },
+  { d: 2, cat: "Life ___", words: ["TIME", "STYLE", "GUARD", "BOAT"] },
+  { d: 2, cat: "Key ___", words: ["BOARD", "HOLE", "NOTE", "CHAIN"] },
+  { d: 2, cat: "Post ___", words: ["CARD", "AGE", "MAN", "PONE"] },
+  { d: 2, cat: "Home ___", words: ["WORK", "SICK", "TOWN", "MADE"] },
 
   // ===== tier 3 — anagrams, hidden words, homophones, tricky compounds =====
   { d: 3, cat: "Palindromes", words: ["LEVEL", "KAYAK", "RADAR", "CIVIC"] },
-  { d: 3, cat: "Silent first letter", words: ["KNEE", "WRAP", "GNOME", "HONEST"] },
+  { d: 3, cat: "Anagrams of RATES", words: ["STARE", "TEARS", "ASTER", "TARES"] },
   { d: 3, cat: "___ stone", words: ["LIME", "MILE", "BRIM", "CAP"] },
   { d: 3, cat: "Homophones of letters", words: ["BEE", "SEA", "WHY", "QUEUE"] },
   { d: 3, cat: "Anagrams of LISTEN", words: ["SILENT", "TINSEL", "INLETS", "ENLIST"] },
@@ -98,5 +126,19 @@ window.CONNECTIONS_GROUPS = [
   { d: 3, cat: "___ way", words: ["HIGH", "DRIVE", "RUN", "HALL"] },
   { d: 3, cat: "___ horn", words: ["FOG", "LONG", "SHOE", "BULL"] },
   { d: 3, cat: "Anagrams of SPARE", words: ["SPEAR", "PEARS", "PARSE", "REAPS"] },
-  { d: 3, cat: "___ ache", words: ["HEAD", "TOOTH", "HEART", "BELLY"] }
+  { d: 3, cat: "___ ache", words: ["HEAD", "TOOTH", "HEART", "BELLY"] },
+  { d: 3, cat: "Silent K", words: ["KNOCK", "KNIT", "KNOB", "KNACK"] },
+  { d: 3, cat: "Silent W", words: ["WRIST", "WRECK", "WREN", "WRENCH"] },
+  { d: 3, cat: "___ some", words: ["FEAR", "AWE", "TIRE", "WHOLE"] },
+  { d: 3, cat: "___ dom", words: ["KING", "FREE", "BORE", "MARTYR"] },
+  { d: 3, cat: "___ let", words: ["PIG", "BOOK", "LEAF", "BRACE"] },
+  { d: 3, cat: "___ ism", words: ["TOUR", "HERO", "REAL", "CRITIC"] },
+  { d: 3, cat: "Anagrams of NOTES", words: ["STONE", "TONES", "ONSET", "STENO"] },
+  { d: 3, cat: "___ ful", words: ["CARE", "HAND", "PLAY", "WONDER"] },
+  { d: 3, cat: "___ ness", words: ["FIT", "DARK", "KIND", "ILL"] },
+  { d: 3, cat: "___ hood", words: ["CHILD", "NEIGHBOR", "FALSE", "BROTHER"] },
+  { d: 3, cat: "___ ment", words: ["PAY", "MOVE", "BASE", "TREAT"] },
+  { d: 3, cat: "___ wise", words: ["CLOCK", "OTHER", "LIKE", "STREET"] },
+  { d: 3, cat: "___ able", words: ["WEAR", "LOVE", "SUIT", "PORT"] },
+  { d: 3, cat: "___ en", words: ["WOOD", "GOLD", "SILK", "WOOL"] }
 ];
