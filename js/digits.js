@@ -92,7 +92,10 @@
 
     selectEl.hidden = true;
     playEl.hidden = false;
-    document.getElementById("level-label").textContent = "Level " + lv + " · " + puzzle.tiles + " numbers";
+    PZ.renderPlayNav(document.getElementById("playnav"), {
+      game: GAME, level: lv, label: "Level " + lv + " · " + puzzle.tiles + " numbers",
+      onGoto: startLevel, onLevels: showSelect
+    });
     document.getElementById("target").textContent = puzzle.target;
     document.getElementById("msg").textContent = "";
     document.getElementById("controls").style.display = "";
@@ -199,10 +202,10 @@
     selTile = null; selOp = null;
     render();
   });
-  document.getElementById("back").addEventListener("click", showSelect);
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (!lv && !playEl.hidden) showSelect();
+    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.isUnlocked(GAME, lv)) startLevel(lv);
+    else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */

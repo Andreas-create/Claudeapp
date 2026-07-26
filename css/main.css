@@ -419,7 +419,10 @@ main {
 /* ---------- Play view header ---------- */
 .play-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .btn.back { padding: 8px 12px; font-size: 14px; }
-.level-label { font-weight: 800; font-size: 16px; margin-left: auto; color: var(--text-dim); }
+.lvnav { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.btn.navbtn { padding: 8px 13px; font-size: 15px; }
+.btn.navbtn:disabled { opacity: .3; }
+.level-label { font-weight: 800; font-size: 15px; color: var(--text); min-width: 92px; text-align: center; }
 .cn-hint { text-align: center; color: var(--text-faint); font-size: 12.5px; margin: 0 0 8px; }
 
 /* ---------- Result overlay stars ---------- */

@@ -140,6 +140,25 @@
   }
   PZ.starString = stars;
 
+  // Play-view header with a Levels button and prev/next level arrows.
+  // opts: {game, level, label, onGoto(level), onLevels}
+  PZ.renderPlayNav = function (container, opts) {
+    var g = opts.game, lv = opts.level;
+    var prevOff = lv <= 1;
+    var nextOff = lv >= PZ.LEVELS || !PZ.isUnlocked(g, lv + 1);
+    container.className = "play-head";
+    container.innerHTML =
+      '<button class="btn back" data-act="levels">▦ Levels</button>' +
+      '<div class="lvnav">' +
+        '<button class="btn navbtn" data-act="prev"' + (prevOff ? " disabled" : "") + ' aria-label="Previous level">◀</button>' +
+        '<span class="level-label">' + opts.label + "</span>" +
+        '<button class="btn navbtn" data-act="next"' + (nextOff ? " disabled" : "") + ' aria-label="Next level">▶</button>' +
+      "</div>";
+    container.querySelector('[data-act="levels"]').addEventListener("click", opts.onLevels);
+    if (!prevOff) container.querySelector('[data-act="prev"]').addEventListener("click", function () { opts.onGoto(lv - 1); });
+    if (!nextOff) container.querySelector('[data-act="next"]').addEventListener("click", function () { opts.onGoto(lv + 1); });
+  };
+
   // Full-screen level-complete overlay. opts: {game, level, won, title, detail,
   // stars, onNext, onRetry, onLevels}
   PZ.showResult = function (opts) {

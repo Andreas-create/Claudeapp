@@ -70,7 +70,10 @@
 
     selectEl.hidden = true;
     playEl.hidden = false;
-    document.getElementById("level-label").textContent = "Level " + lv;
+    PZ.renderPlayNav(document.getElementById("playnav"), {
+      game: GAME, level: lv, label: "Level " + lv,
+      onGoto: startLevel, onLevels: showSelect
+    });
     document.getElementById("hint").textContent = "Make four groups of four · " + maxMistakes + " mistakes allowed";
     document.getElementById("controls").style.display = "";
     location.hash = "" + lv;
@@ -192,10 +195,10 @@
   document.getElementById("shuffle-btn").addEventListener("click", function () {
     state.order = PZ.shuffle(PZ.rng("cn:reshuffle:" + Date.now()), state.order); render();
   });
-  document.getElementById("back").addEventListener("click", showSelect);
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (!lv && !playEl.hidden) showSelect();
+    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.isUnlocked(GAME, lv)) startLevel(lv);
+    else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */

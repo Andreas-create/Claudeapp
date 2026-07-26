@@ -41,8 +41,10 @@
 
     selectEl.hidden = true;
     playEl.hidden = false;
-    document.getElementById("level-label").textContent =
-      "Level " + lv + " · " + COLS + " letters";
+    PZ.renderPlayNav(document.getElementById("playnav"), {
+      game: GAME, level: lv, label: "Level " + lv + " · " + COLS + " letters",
+      onGoto: startLevel, onLevels: showSelect
+    });
     location.hash = "" + lv;
     msgEl.textContent = "";
     render();
@@ -198,10 +200,10 @@
     else if (/^[a-zA-Z]$/.test(e.key)) handleKey(e.key.toLowerCase());
   });
 
-  document.getElementById("back").addEventListener("click", showSelect);
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (!lv && !playEl.hidden) showSelect();
+    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.isUnlocked(GAME, lv)) startLevel(lv);
+    else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */
