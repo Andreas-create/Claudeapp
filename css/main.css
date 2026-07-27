@@ -18,10 +18,11 @@
   --warn: #d8a94a;   /* present, wrong spot */
   --miss: #3a3f4a;   /* absent */
 
-  --c-yellow: #d9b83e;
-  --c-green: #66a561;
-  --c-blue: #5a8fd6;
-  --c-purple: #a97bd1;
+  /* Connections group colours — a vivid pride rainbow (warm → cool) */
+  --c-yellow: #ff6b6b; /* d0 — coral red */
+  --c-green: #ffd166;  /* d1 — sunshine yellow */
+  --c-blue: #06d6a0;   /* d2 — teal green */
+  --c-purple: #9b8cff; /* d3 — periwinkle violet */
 
   --radius: 14px;
   --radius-sm: 9px;
