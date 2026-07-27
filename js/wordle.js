@@ -173,26 +173,28 @@
       var stars = n <= 3 ? 3 : n <= 5 ? 2 : 1;
       PZ.markCleared(GAME, level, stars);
       render();
-      var praise = ["Genius!", "Magnificent!", "Impressive!", "Splendid!", "Great!", "Phew!"];
-      PZ.toast(praise[n - 1] || "Solved!");
-      finishResult(true, stars, "Solved in " + n + " " + (n === 1 ? "try" : "tries"));
+      var phrase = PZ.praise();
+      PZ.toast(phrase);
+      finishResult(true, stars, "Solved in " + n + " " + (n === 1 ? "try" : "tries"), phrase);
       return;
     }
     if (state.guesses.length >= ROWS) {
       state.finished = true; state.won = false;
       PZ.markResult(GAME, level, false, 0);
       render();
-      finishResult(false, 0, "The word was " + answer.toUpperCase());
+      var sp = PZ.sashay();
+      PZ.toast(sp, 2400);
+      finishResult(false, 0, "The word was " + answer.toUpperCase(), sp);
       return;
     }
     render();
   }
 
-  function finishResult(won, stars, detail) {
+  function finishResult(won, stars, detail, title) {
     setTimeout(function () {
       PZ.showResult({
         game: GAME, level: level, won: won, stars: stars,
-        title: won ? "Level " + level + " complete!" : "Out of guesses",
+        title: title || (won ? "Level " + level + " complete!" : "Out of guesses"),
         detail: detail,
         onNext: function () { startLevel(level + 1); },
         onRetry: function () { startLevel(level); },

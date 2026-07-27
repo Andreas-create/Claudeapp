@@ -133,6 +133,24 @@
     toastTimer = setTimeout(function () { t.remove(); }, ms || 1400);
   };
 
+  // Celebratory phrases on a win, sassy-but-kind ones on a loss.
+  var PRAISE = [
+    "Slay! 💅", "Yes QUEEN 👑", "Snapped! 📸", "Werk! 💃", "You ate that 🍽️",
+    "Iconic ✨", "Gagged! 😲", "Serving genius 💁", "Purse first 👛",
+    "The house down boots 🏠", "Category is: WINNER 🏆", "Sickening! 💚",
+    "Henny, you did THAT 🙌", "Legendary ✨", "Fierce 🔥", "Mother has arrived 👑",
+    "Okurrr 💅", "Ate, no crumbs left 🍽️", "Pop off! 🎉", "Flawless, darling 💎"
+  ];
+  var SASHAY = [
+    "Sashay away 💅", "Not your day, but still a star ⭐", "The library is open… read up 📚",
+    "Chin up, sequins on ✨", "Better luck, gorgeous 💖", "That's a wrap, diva 🎬",
+    "Reshuffle the wig, carry on 💇", "Even icons have off days 🌙",
+    "Chic defeat — onward, superstar 🌟", "Bald cap! the next one's yours 🧢"
+  ];
+  function randomOf(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  PZ.praise = function () { return randomOf(PRAISE); };
+  PZ.sashay = function () { return randomOf(SASHAY); };
+
   // Render the level grid for a game. `onPlay(level)` fires on tap.
   // `count` defaults to the 100-level ladder; packs pass their own size.
   PZ.renderLevelGrid = function (container, game, onPlay, count, allOpen) {

@@ -176,11 +176,12 @@
     render();
     var stars = penalty === 0 ? 3 : penalty <= 3 ? 2 : 1;
     PZ.markCleared(GAME, level, stars);
-    PZ.toast("Solved!");
+    var phrase = PZ.praise();
+    PZ.toast(phrase);
     setTimeout(function () {
       PZ.showResult({
         game: GAME, level: level, won: true, stars: stars,
-        title: "Level " + level + " complete!",
+        title: phrase,
         detail: "Reached " + puzzle.target + " in " + moves.length + " steps",
         onNext: function () { startLevel(level + 1); },
         onRetry: function () { startLevel(level); },

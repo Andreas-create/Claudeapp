@@ -219,10 +219,12 @@
     document.getElementById("controls").style.display = "none";
     var stars = won ? (state.mistakes === 0 ? 3 : state.mistakes <= 2 ? 2 : 1) : 0;
     PZ.markResult(GAME, level, won, stars);
+    var phrase = won ? PZ.praise() : PZ.sashay();
+    PZ.toast(phrase, won ? 1600 : 2400);
     setTimeout(function () {
       PZ.showResult({
         game: GAME, level: level, won: won, stars: stars,
-        title: won ? "Level " + level + " complete!" : "Out of tries",
+        title: phrase,
         detail: won
           ? "Solved with " + state.mistakes + " mistake" + (state.mistakes === 1 ? "" : "s")
           : "Groups revealed above",

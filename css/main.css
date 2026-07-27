@@ -10,6 +10,10 @@
   --accent: #6aa9ff;
   --accent-2: #b98cff;
 
+  /* Soft pride spectrum, used sparingly as a playful accent */
+  --pride: linear-gradient(90deg, #ef5350, #ff9800, #ffd54f, #4caf7d, #42a5f5, #7e57c2);
+  --pride-tilt: linear-gradient(120deg, #ef5350, #ff9800, #ffd54f, #4caf7d, #42a5f5, #7e57c2);
+
   --good: #4caf7d;   /* correct spot / solved */
   --warn: #d8a94a;   /* present, wrong spot */
   --miss: #3a3f4a;   /* absent */
@@ -439,3 +443,80 @@ main {
 /* ---------- Result overlay stars ---------- */
 .result-stars { text-align: center; font-size: 34px; letter-spacing: 6px; color: var(--warn); margin: 4px 0 6px; }
 .sheet .btn-row { margin-top: 10px; }
+
+/* ======================================================================
+   Playful pride accents — a soft rainbow used sparingly, base UI stays calm
+   ====================================================================== */
+
+/* Thin pride hairline under the sticky header */
+.nav::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 3px;
+  background: var(--pride);
+  opacity: .9;
+}
+/* Rainbow wordmark */
+.nav .brand span {
+  background: var(--pride);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Home hero: gradient title + a soft rainbow glow behind it */
+.home-hero { position: relative; z-index: 0; }
+.home-hero::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 4px;
+  transform: translateX(-50%);
+  width: min(320px, 80%); height: 120px;
+  background: var(--pride-tilt);
+  filter: blur(64px);
+  opacity: .20;
+  border-radius: 999px;
+  z-index: -1;
+  pointer-events: none;
+}
+.home-hero h1 {
+  background: var(--pride-tilt);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.game-head h1 {
+  background: var(--pride-tilt);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Primary actions & progress bars carry the gradient */
+.btn.primary {
+  background: var(--pride-tilt);
+  border: none;
+  color: #12131a;
+}
+.bar span { background: var(--pride); }
+
+/* The next-up level gets a gentle rainbow ring */
+.lv.next {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px #ef5350, 0 0 0 2px #7e57c2;
+  background:
+    linear-gradient(var(--bg-elev), var(--bg-elev)) padding-box,
+    var(--pride-tilt) border-box;
+  border: 2px solid transparent;
+}
+
+/* A little bounce on playable level tiles */
+.lv.open:hover, .lv.done:hover { transform: translateY(-2px); }
+.lv { transition: transform .1s ease; }
+
+/* Star badge & card star tint stays warm; add a subtle gradient to CTAs */
+.card-cta { background: var(--pride); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; font-weight: 800; }

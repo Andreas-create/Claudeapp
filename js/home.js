@@ -49,7 +49,7 @@
         '<div class="card-icon">🇵🇪</div>' +
         '<div class="card-main">' +
           '<p class="card-title">Peru Connections</p>' +
-          '<p class="card-desc">Five hard puzzles on Peruvian history, food, geography, arts and nature.</p>' +
+          '<p class="card-desc">Ten hard puzzles on Peruvian history, food, geography, arts and nature.</p>' +
         '</div>' +
       '</div>' +
       '<div class="card-progress">' +
