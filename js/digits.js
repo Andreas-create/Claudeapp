@@ -204,14 +204,14 @@
   });
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canPlay(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canOpen(GAME, lv)) startLevel(lv);
     else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */
   (function boot() {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canPlay(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canOpen(GAME, lv)) startLevel(lv);
     else showSelect();
   })();
 })();

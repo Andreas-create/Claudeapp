@@ -36,8 +36,10 @@
     var allWords = [];
     groups.forEach(function (g, gi) { g.words.forEach(function (w) { wordToGroup[w] = gi; allWords.push(w); }); });
 
+    var review = PZ.isLost(GAME, lv); // lost puzzles open read-only for review
     state = {
-      solved: [], mistakes: 0, finished: false, won: false,
+      solved: review ? groups.map(function (_, i) { return i; }) : [],
+      mistakes: 0, finished: review, won: false, review: review,
       order: PZ.shuffle(PZ.rng("peru:order:" + lv), allWords)
     };
     selection = [];
@@ -50,8 +52,10 @@
       label: "Puzzle " + lv + " · " + puzzle.title,
       onGoto: startLevel, onLevels: showSelect
     });
-    document.getElementById("hint").textContent = "Make four groups of four · " + MISTAKES + " mistakes allowed";
-    document.getElementById("controls").style.display = "";
+    document.getElementById("hint").textContent = review
+      ? "Review — you didn't solve this one"
+      : "Make four groups of four · " + MISTAKES + " mistakes allowed";
+    document.getElementById("controls").style.display = review ? "none" : "";
     location.hash = "" + lv;
     render();
   }
@@ -170,14 +174,14 @@
   });
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= MAXLV && lv !== level && PZ.canPlay(GAME, lv, true)) startLevel(lv);
+    if (lv >= 1 && lv <= MAXLV && lv !== level && PZ.canOpen(GAME, lv, true)) startLevel(lv);
     else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */
   (function boot() {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= MAXLV && PZ.canPlay(GAME, lv, true)) startLevel(lv);
+    if (lv >= 1 && lv <= MAXLV && PZ.canOpen(GAME, lv, true)) startLevel(lv);
     else showSelect();
   })();
 })();

@@ -240,6 +240,7 @@ main {
 .wg-cell.good { background: var(--good); border-color: var(--good); color: #fff; }
 .wg-cell.warn { background: var(--warn); border-color: var(--warn); color: #fff; }
 .wg-cell.miss { background: var(--miss); border-color: var(--miss); color: #fff; }
+.wg-cell.reveal { background: transparent; border-color: var(--accent); color: var(--accent); }
 .wg-cell.shake { animation: shake .35s ease; }
 @keyframes pop { 50% { transform: scale(1.08); } }
 @media (max-width: 400px) { .wg-board { --cell: 46px; } }
@@ -421,7 +422,7 @@ main {
   background: color-mix(in srgb, #d9615c 16%, var(--bg-elev));
   border-color: color-mix(in srgb, #d9615c 45%, var(--line));
   color: var(--text-faint);
-  cursor: default;
+  cursor: pointer;
 }
 .lvx { position: absolute; bottom: 4px; left: 0; right: 0; font-size: 11px; font-weight: 800; color: #d9615c; line-height: 1; }
 @media (min-width: 440px) { .lv-grid { grid-template-columns: repeat(10, 1fr); max-width: 560px; } .lv { font-size: 14px; } }

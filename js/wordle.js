@@ -35,7 +35,8 @@
     var cfg = levelConfig(lv);
     answer = cfg.word;
     COLS = cfg.cols;
-    state = { guesses: [], finished: false, won: false };
+    var review = PZ.isLost(GAME, lv); // lost levels open read-only for review
+    state = { guesses: [], finished: review, won: false, review: review };
     current = "";
     PZ.hideResult();
 
@@ -46,8 +47,25 @@
       onGoto: startLevel, onLevels: showSelect
     });
     location.hash = "" + lv;
-    msgEl.textContent = "";
-    render();
+    if (review) { renderReview(); } else { msgEl.textContent = ""; render(); }
+  }
+
+  // Read-only view of a lost level: reveal the answer, no keyboard.
+  function renderReview() {
+    boardEl.style.setProperty("--cols", COLS);
+    boardEl.innerHTML = "";
+    var row = document.createElement("div");
+    row.className = "wg-row";
+    row.style.gridTemplateColumns = "repeat(" + COLS + ", var(--cell))";
+    for (var i = 0; i < COLS; i++) {
+      var cell = document.createElement("div");
+      cell.className = "wg-cell reveal";
+      cell.textContent = answer[i];
+      row.appendChild(cell);
+    }
+    boardEl.appendChild(row);
+    kbdEl.innerHTML = "";
+    msgEl.textContent = "Review — you didn't solve this. The word was " + answer.toUpperCase();
   }
 
   function showSelect() {
@@ -203,14 +221,14 @@
 
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canPlay(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canOpen(GAME, lv)) startLevel(lv);
     else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */
   (function boot() {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canPlay(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canOpen(GAME, lv)) startLevel(lv);
     else showSelect();
   })();
 })();

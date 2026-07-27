@@ -76,12 +76,10 @@
   PZ.levelStars = function (game, level) { return PZ.getProgress(game).stars[level] || 0; };
   PZ.wonCount = function (game) { return Object.keys(PZ.getProgress(game).stars).length; };
 
-  // Can this level be entered? A win may be replayed; a loss may not; an
-  // unlocked, not-yet-attempted level can be played.
-  PZ.canPlay = function (game, level, allOpen) {
-    if (PZ.isWon(game, level)) return true;
-    if (PZ.isLost(game, level)) return false;
-    return allOpen || PZ.isUnlocked(game, level);
+  // Can this level be opened at all? Any non-locked level can be opened —
+  // a win to replay, a loss to review (read-only), an unlocked level to play.
+  PZ.canOpen = function (game, level, allOpen) {
+    return allOpen || PZ.isWon(game, level) || PZ.isLost(game, level) || PZ.isUnlocked(game, level);
   };
 
   // Record a finished level. A win stores its best star rating; a loss marks
@@ -145,7 +143,7 @@
       var won = (p.stars[l] || 0) > 0;
       var lost = !!p.lost[l];
       var unlocked = allOpen || l <= p.reached + 1;
-      var clickable = won || (unlocked && !lost);
+      var clickable = unlocked; // won=replay, lost=review, open=play
       var next = !allOpen && unlocked && !won && !lost && l === p.reached + 1;
       var cls = "lv " + (won ? "done" : lost ? "lost" : unlocked ? "open" : "locked") + (next ? " next" : "");
       var inner;
@@ -174,7 +172,7 @@
     var g = opts.game, lv = opts.level, max = opts.max || PZ.LEVELS, ao = opts.allOpen;
     // Nearest playable level in a direction (skips locked and lost levels).
     function step(dir) {
-      for (var l = lv + dir; l >= 1 && l <= max; l += dir) if (PZ.canPlay(g, l, ao)) return l;
+      for (var l = lv + dir; l >= 1 && l <= max; l += dir) if (PZ.canOpen(g, l, ao)) return l;
       return null;
     }
     var prevT = step(-1), nextT = step(1);

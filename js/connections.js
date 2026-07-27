@@ -101,8 +101,10 @@
     var allWords = [];
     groups.forEach(function (g, gi) { g.words.forEach(function (w) { wordToGroup[w] = gi; allWords.push(w); }); });
 
+    var review = PZ.isLost(GAME, lv); // lost levels open read-only for review
     state = {
-      solved: [], mistakes: 0, finished: false, won: false,
+      solved: review ? groups.map(function (_, i) { return i; }) : [],
+      mistakes: 0, finished: review, won: false, review: review,
       order: PZ.shuffle(PZ.rng("cn:order:" + lv), allWords)
     };
     selection = [];
@@ -114,8 +116,10 @@
       game: GAME, level: lv, label: "Level " + lv,
       onGoto: startLevel, onLevels: showSelect
     });
-    document.getElementById("hint").textContent = "Make four groups of four · " + maxMistakes + " mistakes allowed";
-    document.getElementById("controls").style.display = "";
+    document.getElementById("hint").textContent = review
+      ? "Review — you didn't solve this one"
+      : "Make four groups of four · " + maxMistakes + " mistakes allowed";
+    document.getElementById("controls").style.display = review ? "none" : "";
     location.hash = "" + lv;
     render();
   }
@@ -237,14 +241,14 @@
   });
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canPlay(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canOpen(GAME, lv)) startLevel(lv);
     else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */
   (function boot() {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canPlay(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canOpen(GAME, lv)) startLevel(lv);
     else showSelect();
   })();
 })();
