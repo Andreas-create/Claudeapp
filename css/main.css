@@ -117,34 +117,7 @@ main {
 /* ---------- Home ---------- */
 .home-hero { text-align: center; margin: 18px 0 26px; }
 .home-hero h1 { font-size: 34px; margin: 0 0 6px; letter-spacing: -.03em; }
-.home-date { color: var(--accent); font-weight: 700; margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .08em; }
 .home-sub { color: var(--text-dim); margin: 0; }
-
-.progress {
-  background: var(--bg-elev);
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-}
-.prog-top { display: flex; align-items: center; gap: 12px; }
-.prog-head { font-weight: 800; font-size: 15px; letter-spacing: -.01em; }
-.prog-dots { display: flex; gap: 8px; margin-left: auto; }
-.prog-dot {
-  width: 26px; height: 26px; border-radius: 50%;
-  border: 2px solid var(--line);
-  display: grid; place-items: center;
-  font-size: 14px; font-weight: 800;
-  color: #fff; text-decoration: none;
-  background: var(--bg-elev-2);
-}
-.prog-dot.partial { border-color: var(--warn); }
-.prog-dot.done { background: var(--good); border-color: var(--good); }
-.prog-streak { margin-top: 12px; font-size: 13.5px; font-weight: 600; color: var(--text-dim); }
-.prog-streak b { color: var(--warn); font-size: 15px; }
-.prog-streak.dim { color: var(--text-faint); }
-.prog-best { color: var(--text-faint); font-weight: 600; }
 
 .cards { display: grid; gap: 14px; }
 .section-h { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-dim); margin: 26px 0 12px; }
@@ -348,7 +321,7 @@ main {
 }
 .dg-op.sel { border-color: var(--accent-2); background: color-mix(in srgb, var(--accent-2) 20%, var(--bg-elev)); }
 
-/* ---------- Stats modal ---------- */
+/* ---------- Result overlay ---------- */
 .overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.55);
@@ -368,17 +341,6 @@ main {
 }
 .sheet h2 { margin: 0 0 4px; text-align: center; font-size: 20px; }
 .sheet .result-line { text-align: center; color: var(--text-dim); margin: 0 0 16px; font-weight: 600; }
-.stats-row { display: flex; justify-content: space-around; margin: 16px 0; }
-.stat { text-align: center; }
-.stat .v { font-size: 30px; font-weight: 800; }
-.stat .k { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
-.dist { display: grid; gap: 4px; margin: 8px 0 18px; }
-.dist-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-.dist-row .lab { width: 14px; color: var(--text-dim); font-weight: 700; }
-.dist-bar { background: var(--miss); border-radius: 4px; padding: 2px 8px; color: #fff; font-weight: 700; font-size: 12px; min-width: 26px; text-align: right; }
-.dist-bar.cur { background: var(--good); }
-.countdown { text-align: center; color: var(--text-dim); font-size: 13px; margin-top: 10px; }
-.countdown b { color: var(--text); font-variant-numeric: tabular-nums; }
 
 /* ---------- Home cards: level progress ---------- */
 .card-main { min-width: 0; }

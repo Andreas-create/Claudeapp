@@ -36,7 +36,6 @@
     var seed = xmur3(String(seedStr));
     return mulberry32(seed());
   };
-  PZ.randInt = function (rng, min, max) { return min + Math.floor(rng() * (max - min + 1)); };
   PZ.pick = function (rng, arr) { return arr[Math.floor(rng() * arr.length)]; };
   PZ.shuffle = function (rng, arr) {
     var a = arr.slice();
@@ -73,13 +72,17 @@
   PZ.isUnlocked = function (game, level) { return level <= PZ.getProgress(game).reached + 1; };
   PZ.isWon = function (game, level) { return (PZ.getProgress(game).stars[level] || 0) > 0; };
   PZ.isLost = function (game, level) { return !!PZ.getProgress(game).lost[level]; };
-  PZ.levelStars = function (game, level) { return PZ.getProgress(game).stars[level] || 0; };
   PZ.wonCount = function (game) { return Object.keys(PZ.getProgress(game).stars).length; };
 
   // Can this level be opened at all? Any non-locked level can be opened —
   // a win to replay, a loss to review (read-only), an unlocked level to play.
+  // openable() is the same test against an already-loaded progress object,
+  // for callers that check many levels at once.
+  function openable(p, level, allOpen) {
+    return !!(allOpen || (p.stars[level] || 0) > 0 || p.lost[level] || level <= p.reached + 1);
+  }
   PZ.canOpen = function (game, level, allOpen) {
-    return allOpen || PZ.isWon(game, level) || PZ.isLost(game, level) || PZ.isUnlocked(game, level);
+    return openable(PZ.getProgress(game), level, allOpen);
   };
 
   // Record a finished level. A win stores its best star rating; a loss marks
@@ -258,15 +261,15 @@
     for (var i = 1; i <= 3; i++) s += i <= n ? "★" : "☆";
     return s;
   }
-  PZ.starString = stars;
 
   // Play-view header with a Levels button and prev/next level arrows.
   // opts: {game, level, label, onGoto(level), onLevels}
   PZ.renderPlayNav = function (container, opts) {
-    var g = opts.game, lv = opts.level, max = opts.max || PZ.LEVELS, ao = opts.allOpen;
-    // Nearest playable level in a direction (skips locked and lost levels).
+    var lv = opts.level, max = opts.max || PZ.LEVELS, ao = opts.allOpen;
+    var prog = PZ.getProgress(opts.game); // one read for the whole scan
+    // Nearest openable level in a direction (skips locked levels).
     function step(dir) {
-      for (var l = lv + dir; l >= 1 && l <= max; l += dir) if (PZ.canOpen(g, l, ao)) return l;
+      for (var l = lv + dir; l >= 1 && l <= max; l += dir) if (openable(prog, l, ao)) return l;
       return null;
     }
     var prevT = step(-1), nextT = step(1);
