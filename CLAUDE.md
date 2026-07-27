@@ -41,7 +41,8 @@ js/home.js          Home cards
 data/wordle.js      WORDLE_BANDS: four/five/six/seven-letter answer lists
 data/connections.js CONNECTIONS_GROUPS: 420 groups tagged d:1|2|3
 data/peru.js        PERU_PUZZLES: 10 hand-authored puzzles
-data/definitions.js BRAINBOW_DEFS: curated word explanations for hints
+data/definitions.js BRAINBOW_DEFS + BRAINBOW_DEFS_BY_CAT: offline hint text
+                    for every word in play (generated — see "Hints")
 
 manifest.json       PWA metadata      sw.js      Service worker (offline)
 icons/              App icons (+ icon.svg source)
@@ -76,8 +77,22 @@ in `localStorage` under `pz:<game>:progress`.
 - `PZ.canOpen()` gates entry; `openable()` is the batch variant.
 
 **Hints** (Affinity + Peru): 2 per puzzle. Select exactly one word → 💡 Hint →
-an encyclopedia-style explanation. Curated `BRAINBOW_DEFS` first, then the
-Wikipedia REST summary. A failed lookup does **not** consume a hint.
+a plain-language definition. **Entirely offline** — every word in play has an
+entry in `data/definitions.js`, and nothing is fetched over the network.
+
+That file is generated and carries two maps. `BRAINBOW_DEFS` is word →
+definition and covers all 1367 words. `BRAINBOW_DEFS_BY_CAT` is
+`"category||WORD"` → definition, used only for the ~19 words that mean
+different things in different groups (BOW the front of a ship vs. BOW the
+knot; ROOK the chess piece vs. ROOK the bird); `cn-engine.js` passes the
+selected word's category to `PZ.defineWord` so the right sense wins.
+
+**If you add words or categories, add their definitions too** — an uncovered
+word makes the hint button silently do nothing, and there is no longer a
+network fallback to cover for it. Check coverage across every word+category
+pair before pushing.
+
+A lookup that finds nothing still does **not** consume a hint.
 
 ## Voice and theme
 
