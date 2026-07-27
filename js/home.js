@@ -11,9 +11,10 @@
 
   var html = PZ.GAMES.map(function (g) {
     var p = PZ.getProgress(g.id);
-    var pct = Math.round((p.cleared / PZ.LEVELS) * 100);
+    var won = PZ.wonCount(g.id);
+    var pct = Math.round((won / PZ.LEVELS) * 100);
     var stars = PZ.totalStars(g.id);
-    var cta = p.cleared === 0 ? "Start →" : p.cleared >= PZ.LEVELS ? "Completed ✓" : "Continue →";
+    var cta = p.reached === 0 ? "Start →" : won >= PZ.LEVELS ? "Completed ✓" : "Continue →";
     return '' +
       '<a class="card" href="' + g.path + '">' +
         '<div class="card-top">' +
@@ -26,7 +27,7 @@
         '<div class="card-progress">' +
           '<div class="bar"><span style="width:' + pct + '%"></span></div>' +
           '<div class="card-meta">' +
-            '<span class="badge">' + p.cleared + ' / ' + PZ.LEVELS + ' levels</span>' +
+            '<span class="badge">' + won + ' / ' + PZ.LEVELS + ' solved</span>' +
             (stars ? '<span class="badge star">★ ' + stars + '</span>' : '') +
             '<span class="card-cta">' + cta + '</span>' +
           '</div>' +
@@ -38,9 +39,10 @@
 
   // Themed packs (independent puzzle sets)
   var peru = PZ.getProgress("peru");
+  var peruWon = PZ.wonCount("peru");
   var peruStars = PZ.totalStars("peru");
   var PERU_TOTAL = 10;
-  var peruPct = Math.round((peru.cleared / PERU_TOTAL) * 100);
+  var peruPct = Math.round((peruWon / PERU_TOTAL) * 100);
   document.getElementById("packs").innerHTML =
     '<a class="card" href="peru.html">' +
       '<div class="card-top">' +
@@ -53,9 +55,9 @@
       '<div class="card-progress">' +
         '<div class="bar"><span style="width:' + peruPct + '%"></span></div>' +
         '<div class="card-meta">' +
-          '<span class="badge">' + peru.cleared + ' / ' + PERU_TOTAL + ' solved</span>' +
+          '<span class="badge">' + peruWon + ' / ' + PERU_TOTAL + ' solved</span>' +
           (peruStars ? '<span class="badge star">★ ' + peruStars + '</span>' : '') +
-          '<span class="card-cta">' + (peru.cleared >= PERU_TOTAL ? "Completed ✓" : peru.cleared ? "Continue →" : "Play →") + '</span>' +
+          '<span class="card-cta">' + (peruWon >= PERU_TOTAL ? "Completed ✓" : peru.reached ? "Continue →" : "Play →") + '</span>' +
         '</div>' +
       '</div>' +
     '</a>';

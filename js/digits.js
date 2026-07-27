@@ -110,7 +110,7 @@
     if (location.hash) history.replaceState(null, "", location.pathname);
     var p = PZ.getProgress(GAME);
     document.getElementById("progress-line").textContent =
-      p.cleared + " / 100 levels cleared · " + PZ.totalStars(GAME) + " ★";
+      PZ.wonCount(GAME) + " / 100 solved · " + PZ.totalStars(GAME) + " ★";
     PZ.renderLevelGrid(document.getElementById("grid"), GAME, function (lv) { startLevel(lv); });
   }
 
@@ -204,14 +204,14 @@
   });
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.isUnlocked(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canPlay(GAME, lv)) startLevel(lv);
     else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */
   (function boot() {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && PZ.isUnlocked(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canPlay(GAME, lv)) startLevel(lv);
     else showSelect();
   })();
 })();

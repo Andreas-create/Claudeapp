@@ -59,23 +59,45 @@
 
   PZ.progKey = function (game) { return "pz:" + game + ":progress"; };
 
-  // { cleared: <highest sequentially-cleared level>, stars: { level: bestStars } }
+  // { reached: <furthest level attempted>, stars: {level: bestStars},
+  //   lost: {level: true} }. A level counts as attempted whether won or lost;
+  //   a lost level is finished and cannot be replayed.
   PZ.getProgress = function (game) {
-    return read(PZ.progKey(game), { cleared: 0, stars: {} });
+    var p = read(PZ.progKey(game), null);
+    if (!p) return { reached: 0, stars: {}, lost: {} };
+    if (p.reached === undefined) p.reached = p.cleared || 0; // migrate old saves
+    if (!p.stars) p.stars = {};
+    if (!p.lost) p.lost = {};
+    return p;
   };
-  PZ.isUnlocked = function (game, level) { return level <= PZ.getProgress(game).cleared + 1; };
-  PZ.isCleared = function (game, level) { return level <= PZ.getProgress(game).cleared; };
+  PZ.isUnlocked = function (game, level) { return level <= PZ.getProgress(game).reached + 1; };
+  PZ.isWon = function (game, level) { return (PZ.getProgress(game).stars[level] || 0) > 0; };
+  PZ.isLost = function (game, level) { return !!PZ.getProgress(game).lost[level]; };
   PZ.levelStars = function (game, level) { return PZ.getProgress(game).stars[level] || 0; };
+  PZ.wonCount = function (game) { return Object.keys(PZ.getProgress(game).stars).length; };
 
-  // Record a win. Advances the cleared frontier when the next level is beaten,
-  // and keeps the best star rating for replays.
-  PZ.markCleared = function (game, level, stars) {
+  // Can this level be entered? A win may be replayed; a loss may not; an
+  // unlocked, not-yet-attempted level can be played.
+  PZ.canPlay = function (game, level, allOpen) {
+    if (PZ.isWon(game, level)) return true;
+    if (PZ.isLost(game, level)) return false;
+    return allOpen || PZ.isUnlocked(game, level);
+  };
+
+  // Record a finished level. A win stores its best star rating; a loss marks
+  // the level failed. Either way the reached frontier advances so the next
+  // level unlocks (you are never stuck).
+  PZ.markResult = function (game, level, won, stars) {
     var p = PZ.getProgress(game);
-    p.stars[level] = Math.max(p.stars[level] || 0, stars || 1);
-    if (level === p.cleared + 1) p.cleared = level;
+    if (won) { p.stars[level] = Math.max(p.stars[level] || 0, stars || 1); delete p.lost[level]; }
+    else if (!(p.stars[level] > 0)) { p.lost[level] = true; }
+    if (level > p.reached) p.reached = level;
     write(PZ.progKey(game), p);
     return p;
   };
+  // Back-compat alias for win-only callers.
+  PZ.markCleared = function (game, level, stars) { return PZ.markResult(game, level, true, stars); };
+
   PZ.totalStars = function (game) {
     var s = PZ.getProgress(game).stars, sum = 0;
     for (var k in s) if (s.hasOwnProperty(k)) sum += s[k];
@@ -120,15 +142,18 @@
     var p = PZ.getProgress(game);
     var html = "";
     for (var l = 1; l <= count; l++) {
-      var cleared = l <= p.cleared;
-      var unlocked = allOpen || l <= p.cleared + 1;
-      var next = !allOpen && unlocked && !cleared;
-      var cls = "lv " + (cleared ? "done" : unlocked ? "open" : "locked") + (next ? " next" : "");
-      var inner = unlocked
-        ? '<span class="lvnum">' + l + "</span>" +
-          (cleared ? '<span class="lvstars">' + stars(p.stars[l] || 1) + "</span>" : "")
-        : '<span class="lvlock">🔒</span>';
-      html += '<button class="' + cls + '" data-level="' + l + '"' + (unlocked ? "" : " disabled") + ">" + inner + "</button>";
+      var won = (p.stars[l] || 0) > 0;
+      var lost = !!p.lost[l];
+      var unlocked = allOpen || l <= p.reached + 1;
+      var clickable = won || (unlocked && !lost);
+      var next = !allOpen && unlocked && !won && !lost && l === p.reached + 1;
+      var cls = "lv " + (won ? "done" : lost ? "lost" : unlocked ? "open" : "locked") + (next ? " next" : "");
+      var inner;
+      if (won) inner = '<span class="lvnum">' + l + '</span><span class="lvstars">' + stars(p.stars[l]) + "</span>";
+      else if (lost) inner = '<span class="lvnum">' + l + '</span><span class="lvx">✕</span>';
+      else if (unlocked) inner = '<span class="lvnum">' + l + "</span>";
+      else inner = '<span class="lvlock">🔒</span>';
+      html += '<button class="' + cls + '" data-level="' + l + '"' + (clickable ? "" : " disabled") + ">" + inner + "</button>";
     }
     container.innerHTML = html;
     container.querySelectorAll("button:not([disabled])").forEach(function (b) {
@@ -146,20 +171,24 @@
   // Play-view header with a Levels button and prev/next level arrows.
   // opts: {game, level, label, onGoto(level), onLevels}
   PZ.renderPlayNav = function (container, opts) {
-    var g = opts.game, lv = opts.level, max = opts.max || PZ.LEVELS;
-    var prevOff = lv <= 1;
-    var nextOff = lv >= max || (!opts.allOpen && !PZ.isUnlocked(g, lv + 1));
+    var g = opts.game, lv = opts.level, max = opts.max || PZ.LEVELS, ao = opts.allOpen;
+    // Nearest playable level in a direction (skips locked and lost levels).
+    function step(dir) {
+      for (var l = lv + dir; l >= 1 && l <= max; l += dir) if (PZ.canPlay(g, l, ao)) return l;
+      return null;
+    }
+    var prevT = step(-1), nextT = step(1);
     container.className = "play-head";
     container.innerHTML =
       '<button class="btn back" data-act="levels">▦ Levels</button>' +
       '<div class="lvnav">' +
-        '<button class="btn navbtn" data-act="prev"' + (prevOff ? " disabled" : "") + ' aria-label="Previous level">◀</button>' +
+        '<button class="btn navbtn" data-act="prev"' + (prevT ? "" : " disabled") + ' aria-label="Previous level">◀</button>' +
         '<span class="level-label">' + opts.label + "</span>" +
-        '<button class="btn navbtn" data-act="next"' + (nextOff ? " disabled" : "") + ' aria-label="Next level">▶</button>' +
+        '<button class="btn navbtn" data-act="next"' + (nextT ? "" : " disabled") + ' aria-label="Next level">▶</button>' +
       "</div>";
     container.querySelector('[data-act="levels"]').addEventListener("click", opts.onLevels);
-    if (!prevOff) container.querySelector('[data-act="prev"]').addEventListener("click", function () { opts.onGoto(lv - 1); });
-    if (!nextOff) container.querySelector('[data-act="next"]').addEventListener("click", function () { opts.onGoto(lv + 1); });
+    if (prevT) container.querySelector('[data-act="prev"]').addEventListener("click", function () { opts.onGoto(prevT); });
+    if (nextT) container.querySelector('[data-act="next"]').addEventListener("click", function () { opts.onGoto(nextT); });
   };
 
   // Full-screen level-complete overlay. opts: {game, level, won, title, detail,
@@ -176,10 +205,11 @@
     var starRow = opts.won
       ? '<div class="result-stars">' + stars(opts.stars || 1) + "</div>"
       : "";
-    var nextBtn = (opts.won && !last)
-      ? '<button class="btn primary" id="pz-next">Next level →</button>' : "";
-    var lastMsg = (opts.won && last)
-      ? '<p class="result-line">🏆 ' + (opts.finalMsg || "You finished all " + (opts.max || PZ.LEVELS) + " levels!") + "</p>"
+    // A loss cannot be replayed; both outcomes may advance to the next level.
+    var nextBtn = !last ? '<button class="btn primary" id="pz-next">Next level →</button>' : "";
+    var replayBtn = opts.won ? '<button class="btn" id="pz-retry">Replay</button>' : "";
+    var lastMsg = (last && (opts.won || opts.reached))
+      ? '<p class="result-line">🏆 ' + (opts.finalMsg || "You reached the end!") + "</p>"
       : "";
     ov.innerHTML =
       '<div class="sheet">' +
@@ -188,8 +218,7 @@
         (opts.detail ? '<p class="result-line">' + opts.detail + "</p>" : "") +
         lastMsg +
         '<div class="btn-row">' +
-          nextBtn +
-          '<button class="btn" id="pz-retry">' + (opts.won ? "Replay" : "Try again") + "</button>" +
+          nextBtn + replayBtn +
           '<button class="btn" id="pz-levels">Levels</button>' +
         "</div>" +
       "</div>";
@@ -197,7 +226,8 @@
     function close() { ov.hidden = true; }
     var nb = document.getElementById("pz-next");
     if (nb) nb.addEventListener("click", function () { close(); opts.onNext(); });
-    document.getElementById("pz-retry").addEventListener("click", function () { close(); opts.onRetry(); });
+    var rb = document.getElementById("pz-retry");
+    if (rb) rb.addEventListener("click", function () { close(); opts.onRetry(); });
     document.getElementById("pz-levels").addEventListener("click", function () { close(); opts.onLevels(); });
   };
   PZ.hideResult = function () {
