@@ -1,4 +1,4 @@
-/* Digits — 100 levels. Combine the numbers with + - x / to reach the target.
+/* Digits — 200 levels. Combine the numbers with + - x / to reach the target.
    Difficulty ramps by how many numbers you juggle (3 -> 6) and how large the
    target and numbers get. Every level is generated solvable by construction. */
 (function () {
@@ -6,6 +6,7 @@
   PZ.renderNav("digits");
 
   var GAME = "digits";
+  var MAX = 200;
   var OPS = [
     { id: "+", label: "+" }, { id: "-", label: "−" },
     { id: "*", label: "×" }, { id: "/", label: "÷" }
@@ -26,14 +27,20 @@
     return null;
   }
 
+  // Levels 1-100 grow the tile count 3 -> 6; 101-200 keep six tiles but
+  // demand larger targets built from bigger numbers, so late levels need
+  // longer chains of operations.
   function levelConfig(level) {
     var tiles = level <= 20 ? 3 : level <= 45 ? 4 : level <= 70 ? 5 : 6;
-    var nBig = tiles <= 3 ? 0 : tiles === 4 ? 1 : 2;
-    var bigs = level <= 20 ? [10] : level <= 45 ? [10, 15, 20] : [10, 15, 20, 25];
+    var nBig = tiles <= 3 ? 0 : tiles === 4 ? 1 : level <= 100 ? 2 : 3;
+    var bigs = level <= 20 ? [10]
+      : level <= 45 ? [10, 15, 20]
+      : level <= 100 ? [10, 15, 20, 25]
+      : [15, 20, 25, 50, 75];
     return {
       tiles: tiles, nBig: nBig, bigs: bigs,
-      lo: 10 + level,
-      hi: Math.min(999, 40 + level * 8)
+      lo: level <= 100 ? 10 + level : 120 + (level - 100) * 3,
+      hi: level <= 100 ? Math.min(999, 40 + level * 8) : 999
     };
   }
 
@@ -93,7 +100,7 @@
     selectEl.hidden = true;
     playEl.hidden = false;
     PZ.renderPlayNav(document.getElementById("playnav"), {
-      game: GAME, level: lv, label: "Level " + lv + " · " + puzzle.tiles + " numbers",
+      game: GAME, level: lv, max: MAX, label: "Level " + lv + " · " + puzzle.tiles + " numbers",
       onGoto: startLevel, onLevels: showSelect
     });
     document.getElementById("target").textContent = puzzle.target;
@@ -110,8 +117,8 @@
     if (location.hash) history.replaceState(null, "", location.pathname);
     var p = PZ.getProgress(GAME);
     document.getElementById("progress-line").textContent =
-      PZ.wonCount(GAME) + " / 100 solved · " + PZ.totalStars(GAME) + " ★";
-    PZ.renderLevelGrid(document.getElementById("grid"), GAME, function (lv) { startLevel(lv); });
+      PZ.wonCount(GAME) + " / " + MAX + " solved · " + PZ.totalStars(GAME) + " ★";
+    PZ.renderLevelGrid(document.getElementById("grid"), GAME, function (lv) { startLevel(lv); }, MAX);
   }
 
   /* ---------- rendering ---------- */
@@ -180,7 +187,7 @@
     PZ.toast(phrase);
     setTimeout(function () {
       PZ.showResult({
-        game: GAME, level: level, won: true, stars: stars,
+        game: GAME, level: level, max: MAX, won: true, stars: stars,
         title: phrase,
         detail: "Reached " + puzzle.target + " in " + moves.length + " steps",
         onNext: function () { startLevel(level + 1); },
@@ -205,14 +212,14 @@
   });
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canOpen(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= MAX && lv !== level && PZ.canOpen(GAME, lv)) startLevel(lv);
     else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */
   (function boot() {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canOpen(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= MAX && PZ.canOpen(GAME, lv)) startLevel(lv);
     else showSelect();
   })();
 })();

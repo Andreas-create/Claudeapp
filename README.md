@@ -1,6 +1,6 @@
 # Brainbow
 
-A small collection of puzzle games, each with **100 levels** that start easy and
+A small collection of puzzle games, each with **200 levels** that start easy and
 get progressively harder. Clear a level to unlock the next one. Your progress
 and star ratings are saved locally in your browser.
 
@@ -10,9 +10,9 @@ No accounts, no backend, no build step — just static HTML, CSS, and JavaScript
 
 | Game | How it works | Difficulty ramp |
 | --- | --- | --- |
-| **🔤 Word Guess** | Guess the hidden word in six tries, with green/yellow/gray feedback. | Word length grows 4 → 5 → 6 letters; common → obscure. |
+| **🔤 Word Guess** | Guess the hidden word in six tries, with green/yellow/gray feedback. | Word length grows 4 → 5 → 6 → 7 letters, and the guess allowance drops to 5 then 4 near the top; every level has a unique answer. |
 | **🔗 Affinity** | Sort 16 words into four secret groups of four (a Connections-style game). | Easy distinct categories → tricky wordplay; fewer mistakes allowed later. |
-| **🔢 Digits** | Combine the numbers with +, −, ×, ÷ to reach the target. | More numbers (3 → 6) and larger targets. |
+| **🔢 Digits** | Combine the numbers with +, −, ×, ÷ to reach the target. | More numbers (3 → 6), then bigger source numbers and much larger targets after level 100. |
 
 Each level is **deterministic** — level *N* is always the same puzzle — and every
 Digits level is generated so a solution is guaranteed to exist. Beat a level to
@@ -45,8 +45,8 @@ js/home.js                     Home screen logic
 js/wordle.js                   Word Guess levels
 js/connections.js              Affinity levels
 js/digits.js                   Digits levels
-data/wordle.js                 Difficulty-ordered word bands (4/5/6 letters)
-data/connections.js            Pool of 60 themed groups across four tiers
+data/wordle.js                 Difficulty-ordered word bands (4/5/6/7 letters)
+data/connections.js            Pool of 420 themed groups across three tiers
 ```
 
 Scripts are plain classic scripts sharing a global `PZ` namespace (rather than ES

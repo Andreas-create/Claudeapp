@@ -1,13 +1,15 @@
-/* Word Guess — 100 levels of Wordle-style word guessing.
-   Difficulty ramps by word length: L1-40 four letters, L41-80 five,
-   L81-100 six, common -> obscure within each band. */
+/* Word Guess — 200 levels of Wordle-style word guessing.
+   Difficulty ramps by word length (4 -> 5 -> 6 -> 7 letters) and by the
+   guess allowance, which tightens to 5 then 4 tries near the top.
+   Every level uses a distinct answer; words run common -> obscure. */
 (function () {
   "use strict";
   PZ.renderNav("wordle");
 
   var GAME = "wordle";
-  var ROWS = 6;
+  var MAX = 200;
   var BANDS = window.WORDLE_BANDS;
+  var ROWS = 6; // guesses allowed for the active level (tightens late on)
 
   var selectEl = document.getElementById("select");
   var playEl = document.getElementById("play");
@@ -16,14 +18,18 @@
   var msgEl = document.getElementById("msg");
 
   // ----- per-level config -----
+  // Word length grows with the level, and the guess allowance shrinks near
+  // the top: six tries through level 150, then five, then four for 191-200.
   function levelConfig(level) {
     var band, idx;
-    if (level <= 40) { band = "four"; idx = level - 1; }
-    else if (level <= 80) { band = "five"; idx = level - 41; }
-    else { band = "six"; idx = level - 81; }
+    if (level <= 50) { band = "four"; idx = level - 1; }
+    else if (level <= 120) { band = "five"; idx = level - 51; }
+    else if (level <= 175) { band = "six"; idx = level - 121; }
+    else { band = "seven"; idx = level - 176; }
     var list = BANDS[band];
     var word = list[idx % list.length].toLowerCase();
-    return { word: word, cols: word.length };
+    var rows = level <= 150 ? 6 : level <= 190 ? 5 : 4;
+    return { word: word, cols: word.length, rows: rows };
   }
 
   // ----- game state (per active level) -----
@@ -35,6 +41,7 @@
     var cfg = levelConfig(lv);
     answer = cfg.word;
     COLS = cfg.cols;
+    ROWS = cfg.rows;
     var review = PZ.isLost(GAME, lv); // lost levels open read-only for review
     state = { guesses: [], finished: review, won: false, review: review };
     current = "";
@@ -43,7 +50,8 @@
     selectEl.hidden = true;
     playEl.hidden = false;
     PZ.renderPlayNav(document.getElementById("playnav"), {
-      game: GAME, level: lv, label: "Level " + lv + " · " + COLS + " letters",
+      game: GAME, level: lv, max: MAX,
+      label: "Level " + lv + " · " + COLS + " letters · " + ROWS + " tries",
       onGoto: startLevel, onLevels: showSelect
     });
     location.hash = "" + lv;
@@ -79,8 +87,8 @@
   function renderSelect() {
     var p = PZ.getProgress(GAME);
     document.getElementById("progress-line").textContent =
-      PZ.wonCount(GAME) + " / 100 solved · " + PZ.totalStars(GAME) + " ★";
-    PZ.renderLevelGrid(document.getElementById("grid"), GAME, function (lv) { startLevel(lv); });
+      PZ.wonCount(GAME) + " / " + MAX + " solved · " + PZ.totalStars(GAME) + " ★";
+    PZ.renderLevelGrid(document.getElementById("grid"), GAME, function (lv) { startLevel(lv); }, MAX);
   }
 
   /* ---------- scoring ---------- */
@@ -170,7 +178,7 @@
     if (guess === answer) {
       state.finished = true; state.won = true;
       var n = state.guesses.length;
-      var stars = n <= 3 ? 3 : n <= 5 ? 2 : 1;
+      var stars = n <= Math.ceil(ROWS / 2) ? 3 : n <= ROWS - 1 ? 2 : 1;
       PZ.markCleared(GAME, level, stars);
       render();
       var phrase = PZ.praise();
@@ -193,7 +201,7 @@
   function finishResult(won, stars, detail, title) {
     setTimeout(function () {
       PZ.showResult({
-        game: GAME, level: level, won: won, stars: stars,
+        game: GAME, level: level, max: MAX, won: won, stars: stars,
         title: title || (won ? "Level " + level + " complete!" : "Out of guesses"),
         detail: detail,
         onNext: function () { startLevel(level + 1); },
@@ -223,14 +231,14 @@
 
   window.addEventListener("hashchange", function () {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && lv !== level && PZ.canOpen(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= MAX && lv !== level && PZ.canOpen(GAME, lv)) startLevel(lv);
     else if (!lv && !playEl.hidden) showSelect();
   });
 
   /* ---------- boot ---------- */
   (function boot() {
     var lv = parseInt(location.hash.slice(1), 10);
-    if (lv >= 1 && lv <= PZ.LEVELS && PZ.canOpen(GAME, lv)) startLevel(lv);
+    if (lv >= 1 && lv <= MAX && PZ.canOpen(GAME, lv)) startLevel(lv);
     else showSelect();
   })();
 })();

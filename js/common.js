@@ -155,9 +155,9 @@
   /* ---------- UI helpers ---------- */
 
   var GAMES = [
-    { id: "wordle", name: "Word Guess", path: "wordle.html", icon: "🔤", levels: 100 },
+    { id: "wordle", name: "Word Guess", path: "wordle.html", icon: "🔤", levels: 200 },
     { id: "connections", name: "Affinity", path: "connections.html", icon: "🔗", levels: 200 },
-    { id: "digits", name: "Digits", path: "digits.html", icon: "🔢", levels: 100 }
+    { id: "digits", name: "Digits", path: "digits.html", icon: "🔢", levels: 200 }
   ];
   PZ.GAMES = GAMES;
 

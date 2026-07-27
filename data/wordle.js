@@ -1,23 +1,38 @@
-/* Word Guess answer bands, ordered roughly easy -> harder within each band.
-   Levels 1-40 use 4-letter words, 41-80 use 5-letter, 81-100 use 6-letter. */
+/* Word Guess answers, ordered easy -> hard inside each band.
+   200 levels, every answer unique:
+     levels   1- 50  four letters  (band "four",  50 words)
+     levels  51-120  five letters  (band "five",  70 words)
+     levels 121-175  six letters   (band "six",   55 words)
+     levels 176-200  seven letters (band "seven", 25 words) */
 window.WORDLE_BANDS = {
   four: [
     "LOVE","TIME","GAME","PLAY","BLUE","TREE","FISH","BIRD","CAKE","MILK",
     "DOOR","BOOK","STAR","MOON","RAIN","SNOW","FIRE","GOLD","KING","SHIP",
     "ROAD","LION","FROG","BEAR","DUCK","WOLF","GOAT","CORN","LEAF","ROSE",
     "SAND","WAVE","WIND","LAMP","RING","COIN","DRUM","KITE","NEST","PALM",
-    "REEF","VASE","YARN","QUIZ","JADE","GLOW"
+    "REEF","VASE","YARN","QUIZ","JADE","GLOW","ONYX","LYNX","WISP","GNAW"
   ],
   five: [
     "APPLE","HOUSE","WATER","MUSIC","LIGHT","HAPPY","GREEN","TRAIN","BREAD","CHAIR",
     "TABLE","PHONE","RIVER","CLOUD","BEACH","PLANT","HEART","SMILE","DANCE","DREAM",
     "TIGER","HORSE","EAGLE","OCEAN","STONE","FLAME","GRAPE","LEMON","ROBIN","OLIVE",
     "PEARL","QUILT","RAVEN","VIVID","WAGON","ZEBRA","AMBER","GLIDE","HAUNT","IVORY",
-    "JOKER","KOALA","MIRTH","NIFTY","PLUME"
+    "JOKER","KOALA","MIRTH","NIFTY","PLUME","CRISP","BLUNT","FROST","SHARD","TWIRL",
+    "WHISK","GLOOM","PRISM","SWIRL","CHIME","BRAWN","CLEFT","DWELL","EMBER","FEIGN",
+    "GAUNT","HOVEL","IDIOM","KNELL","LUMEN","MOTIF","NUDGE","OMBRE","PIQUE","QUELL"
   ],
   six: [
     "GARDEN","ORANGE","PENCIL","ROCKET","MONKEY","FLOWER","BRIDGE","CASTLE","DRAGON","ISLAND",
     "JUNGLE","MARKET","PLANET","SILVER","WINTER","YELLOW","ANCHOR","BREEZE","CACTUS","FALCON",
-    "HAMMER","LIZARD","NEEDLE","PEBBLE","WALNUT"
+    "HAMMER","LIZARD","NEEDLE","PEBBLE","WALNUT","VELVET","MARBLE","THRIVE","QUIVER","SPIRAL",
+    "TEMPLE","WISDOM","ZENITH","BALLAD","CIPHER","DAMASK","EMBERS","FRUGAL","GAMBIT","HAZARD",
+    "INDIGO","JOVIAL","KETTLE","LAGOON","MYRIAD","NECTAR","OBLIGE","PLIGHT","QUARRY","RUSTIC",
+    "SAVORY","TUNDRA","UNWIND","VORTEX","WHIMSY"
+  ],
+  seven: [
+    "JOURNEY","MYSTERY","HARVEST","TENDRIL","CRIMSON","GLIMPSE","LANTERN",
+    "MEADOWS","OBSCURE","PARADOX","QUINTET","RECLUSE","SERPENT","TRELLIS",
+    "UMBRAGE","VOYAGER","WHISTLE","ZEPHYRS","ALCHEMY","BEGUILE","CADENCE",
+    "DAPPLED","EPITOME","FLOTSAM","GRAPPLE"
   ]
 };
