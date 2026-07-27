@@ -100,6 +100,23 @@ Deploy status: repo **Actions** tab → "Deploy to GitHub Pages".
 If a run fails instantly with no logs, it is the environment gate:
 Settings → Environments → `github-pages` → Deployment branches → No restriction.
 
+## Analytics
+
+Visitor counts come from **Cloudflare Web Analytics** — cookieless, no consent
+banner, free. The whole integration is `CF_BEACON_TOKEN` near the bottom of
+`js/common.js`: paste the site token there to switch counting on, blank it to
+switch it off. No other file knows about it.
+
+The loader deliberately stays silent when the token is blank, on `file://`,
+and on `localhost`/`127.0.0.1`, so local testing never pollutes the numbers.
+It is wrapped in try/catch — counting visitors must never break a puzzle.
+`sw.js` already passes cross-origin requests straight through, so the beacon
+needs no service-worker changes.
+
+**The numbers are a floor, not a total.** Brainbow is an offline-capable PWA:
+once installed, someone can play for weeks without the beacon ever firing.
+Ad blockers hide more. Read the dashboard as a trend, not a headcount.
+
 ## Testing
 
 Playwright is not a dependency; install it per-session and drive real Chromium:
