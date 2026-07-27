@@ -12,9 +12,10 @@
   var html = PZ.GAMES.map(function (g) {
     var p = PZ.getProgress(g.id);
     var won = PZ.wonCount(g.id);
-    var pct = Math.round((won / PZ.LEVELS) * 100);
+    var total = g.levels || PZ.LEVELS;
+    var pct = Math.round((won / total) * 100);
     var stars = PZ.totalStars(g.id);
-    var cta = p.reached === 0 ? "Start →" : won >= PZ.LEVELS ? "Completed ✓" : "Continue →";
+    var cta = p.reached === 0 ? "Start →" : won >= total ? "Completed ✓" : "Continue →";
     return '' +
       '<a class="card" href="' + g.path + '">' +
         '<div class="card-top">' +
@@ -27,7 +28,7 @@
         '<div class="card-progress">' +
           '<div class="bar"><span style="width:' + pct + '%"></span></div>' +
           '<div class="card-meta">' +
-            '<span class="badge">' + won + ' / ' + PZ.LEVELS + ' solved</span>' +
+            '<span class="badge">' + won + ' / ' + total + ' solved</span>' +
             (stars ? '<span class="badge star">★ ' + stars + '</span>' : '') +
             '<span class="card-cta">' + cta + '</span>' +
           '</div>' +

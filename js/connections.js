@@ -6,16 +6,15 @@
   PZ.renderNav("connections");
 
   var POOL = window.CONNECTIONS_GROUPS;
-  var GAP = 20; // minimum levels between reuse of any category
+  var MAX = 200;  // levels in the ladder
+  var GAP = 100;  // minimum levels between reuse of any category
 
-  // Difficulty ramp: how many of the four groups come from each tier.
-  // Capped at 2 per tier so the pool can keep categories GAP+ levels apart.
-  function composition(level) {
-    if (level <= 25) return { 1: 2, 2: 2, 3: 0 };
-    if (level <= 50) return { 1: 1, 2: 2, 3: 1 };
-    return { 1: 0, 2: 2, 3: 2 };
-  }
-  function mistakesFor(level) { return level <= 40 ? 4 : level <= 80 ? 3 : 2; }
+  // Every level mixes 1 green + 2 blue + 1 purple; the pool per tier is
+  // sized so the scheduler can keep any category 100+ levels from its
+  // reuse (each category appears at most twice across the ladder).
+  // Difficulty ramps through the mistake allowance instead.
+  function composition() { return { 1: 1, 2: 2, 3: 1 }; }
+  function mistakesFor(level) { return level <= 70 ? 4 : level <= 140 ? 3 : 2; }
 
   // Assign four groups to every level, deterministically. A least-recently-
   // used picker enforces that no category repeats within GAP levels (falling
@@ -48,7 +47,7 @@
       return scan(deck, level, used, true) || scan(deck, level, used, false) || deck[0];
     }
 
-    for (var level = 1; level <= PZ.LEVELS; level++) {
+    for (var level = 1; level <= MAX; level++) {
       var c = composition(level), chosen = [], used = {};
       [1, 2, 3].forEach(function (t) {
         for (var i = 0; i < c[t]; i++) {
@@ -65,7 +64,7 @@
 
   PZ.connectionsGame({
     game: "connections",
-    maxLevels: PZ.LEVELS,
+    maxLevels: MAX,
     allOpen: false,
     seedPrefix: "cn",
     buildLevel: function (lv) {
@@ -76,7 +75,7 @@
       };
     },
     progressLine: function () {
-      return PZ.wonCount("connections") + " / " + PZ.LEVELS + " solved · " + PZ.totalStars("connections") + " ★";
+      return PZ.wonCount("connections") + " / " + MAX + " solved · " + PZ.totalStars("connections") + " ★";
     }
   });
 })();
