@@ -156,7 +156,7 @@
 
   var GAMES = [
     { id: "wordle", name: "Word Guess", path: "wordle.html", icon: "🔤", levels: 100 },
-    { id: "connections", name: "Connections", path: "connections.html", icon: "🔗", levels: 200 },
+    { id: "connections", name: "Affinity", path: "connections.html", icon: "🔗", levels: 200 },
     { id: "digits", name: "Digits", path: "digits.html", icon: "🔢", levels: 100 }
   ];
   PZ.GAMES = GAMES;

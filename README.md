@@ -11,7 +11,7 @@ No accounts, no backend, no build step — just static HTML, CSS, and JavaScript
 | Game | How it works | Difficulty ramp |
 | --- | --- | --- |
 | **🔤 Word Guess** | Guess the hidden word in six tries, with green/yellow/gray feedback. | Word length grows 4 → 5 → 6 letters; common → obscure. |
-| **🔗 Connections** | Sort 16 words into four secret groups of four. | Easy distinct categories → tricky wordplay; fewer mistakes allowed later. |
+| **🔗 Affinity** | Sort 16 words into four secret groups of four (a Connections-style game). | Easy distinct categories → tricky wordplay; fewer mistakes allowed later. |
 | **🔢 Digits** | Combine the numbers with +, −, ×, ÷ to reach the target. | More numbers (3 → 6) and larger targets. |
 
 Each level is **deterministic** — level *N* is always the same puzzle — and every
@@ -36,14 +36,14 @@ It also deploys automatically to GitHub Pages on every push to `main`
 ```
 index.html                     Home screen with the three game cards
 wordle.html                    Word Guess (level select + play)
-connections.html               Connections (level select + play)
+connections.html               Affinity (level select + play)
 digits.html                    Digits (level select + play)
 css/main.css                   Shared styling (dark + light theme aware)
 js/common.js                   Seeded RNG, level progress + stars,
                                level-select grid, result screen
 js/home.js                     Home screen logic
 js/wordle.js                   Word Guess levels
-js/connections.js              Connections levels
+js/connections.js              Affinity levels
 js/digits.js                   Digits levels
 data/wordle.js                 Difficulty-ordered word bands (4/5/6 letters)
 data/connections.js            Pool of 60 themed groups across four tiers
@@ -60,7 +60,7 @@ while difficulty scales with the level:
 
 - **Word Guess** walks difficulty-ordered word lists, moving to longer bands as
   levels rise.
-- **Connections** draws its four groups from a difficulty *tier window* that
+- **Affinity** draws its four groups from a difficulty *tier window* that
   climbs with the level, and lowers the mistake allowance in later levels.
 - **Digits** folds a growing set of numbers down to a target with valid
   operations, guaranteeing solvability.
