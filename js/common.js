@@ -187,15 +187,20 @@
   var PRAISE = [
     "Slay! 💅", "Yes QUEEN 👑", "Snapped! 📸", "Werk! 💃", "You ate that 🍽️",
     "Iconic ✨", "Gagged! 😲", "Serving genius 💁", "Purse first 👛",
-    "The house down boots 🏠", "Category is: WINNER 🏆", "Sickening! 💚",
-    "Henny, you did THAT 🙌", "Legendary ✨", "Fierce 🔥", "Mother has arrived 👑",
-    "Okurrr 💅", "Ate, no crumbs left 🍽️", "Pop off! 🎉", "Flawless, darling 💎"
+    "The house down boots 🏠", "Sickening! 💚", "Legendary ✨", "Fierce 🔥",
+    "Mother has arrived 👑", "Okurrr 💅", "Ate, no crumbs left 🍽️",
+    "Pop off! 🎉", "Flawless, darling 💎", "Shantay, you stay ✨",
+    "You understood the assignment 📝", "Lip synced for your life — and won 🎤",
+    "Legendary children 👑", "The girls are STUNNED 😲", "Chef's kiss, diva 😘",
+    "Runway ready 🌟", "Crown's still on 👑", "Beauty AND brains 💋"
   ];
   var SASHAY = [
     "Sashay away 💅", "Not your day, but still a star ⭐", "The library is open… read up 📚",
-    "Chin up, sequins on ✨", "Better luck, gorgeous 💖", "That's a wrap, diva 🎬",
+    "Better luck, gorgeous 💖", "That's a wrap, diva 🎬",
     "Reshuffle the wig, carry on 💇", "Even icons have off days 🌙",
-    "Chic defeat — onward, superstar 🌟", "Bald cap! the next one's yours 🧢"
+    "Chic defeat — onward, superstar 🌟", "Exit stage left, still gorgeous 🎭",
+    "Not your crown this time, still your kingdom 👑",
+    "Dust yourself off, sparkle intact 💫", "The judges were harsh, darling ⚖️"
   ];
   function randomOf(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
   PZ.praise = function () { return randomOf(PRAISE); };
