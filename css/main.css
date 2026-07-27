@@ -441,6 +441,25 @@ main {
 .level-label { font-weight: 800; font-size: 15px; color: var(--text); min-width: 92px; text-align: center; }
 .cn-hint { text-align: center; color: var(--text-faint); font-size: 12.5px; margin: 0 0 8px; }
 
+/* Hint (word explanation) panel */
+.hint-panel {
+  background: var(--bg-elev);
+  border: 1px solid var(--line-soft);
+  border-left: 3px solid var(--warn);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin: 0 0 14px;
+  animation: toast-in .18s ease;
+}
+.hint-word { font-weight: 800; font-size: 13px; letter-spacing: .04em; margin-bottom: 3px; }
+.hint-text { color: var(--text-dim); font-size: 13.5px; line-height: 1.45; }
+#hint-btn.thinking { opacity: .6; }
+#hint-count {
+  display: inline-block; min-width: 18px; text-align: center;
+  background: color-mix(in srgb, var(--warn) 22%, transparent);
+  color: var(--warn); border-radius: 999px; font-size: 12px; padding: 1px 5px; margin-left: 2px;
+}
+
 /* ---------- Result overlay stars ---------- */
 .result-stars { text-align: center; font-size: 34px; letter-spacing: 6px; color: var(--warn); margin: 4px 0 6px; }
 .sheet .btn-row { margin-top: 10px; }

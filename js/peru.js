@@ -21,6 +21,14 @@
   var level = 0, groups = [], colorIndex = [], wordToGroup = {};
   var state = null, selection = [];
 
+  // 2 hints per puzzle: select exactly one word, tap 💡 Hint.
+  var hints = PZ.setupHints({
+    getSelectedWord: function () {
+      if (!state || state.finished) return null;
+      return selection.length === 1 ? selection[0] : null;
+    }
+  });
+
   function startLevel(lv) {
     level = lv;
     var puzzle = PUZZLES[lv - 1];
@@ -56,6 +64,7 @@
       ? "Review — you didn't solve this one"
       : "Make four groups of four · " + MISTAKES + " mistakes allowed";
     document.getElementById("controls").style.display = review ? "none" : "";
+    hints.reset();
     location.hash = "" + lv;
     render();
   }

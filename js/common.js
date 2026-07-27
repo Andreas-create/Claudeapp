@@ -102,6 +102,53 @@
     return sum;
   };
 
+  // Wire up the shared hint UI (#hint-btn/#hint-count/#hint-panel).
+  // 2 hints per puzzle: select one word, tap Hint, get its encyclopedia
+  // explanation. A failed lookup does not consume a hint.
+  // Returns {reset} to re-arm when a new level starts.
+  PZ.setupHints = function (opts) {
+    var btn = document.getElementById("hint-btn");
+    var countEl = document.getElementById("hint-count");
+    var panel = document.getElementById("hint-panel");
+    var wordEl = document.getElementById("hint-word");
+    var textEl = document.getElementById("hint-text");
+    if (!btn) return { reset: function () {} };
+    var MAX = 2, left = MAX, busy = false;
+
+    function sync() {
+      countEl.textContent = left;
+      btn.disabled = left <= 0 || busy;
+    }
+    btn.addEventListener("click", function () {
+      if (left <= 0 || busy) return;
+      var word = opts.getSelectedWord();
+      if (!word) { PZ.toast("Select one word first"); return; }
+      busy = true; sync();
+      btn.classList.add("thinking");
+      PZ.defineWord(word, function (text) {
+        busy = false;
+        btn.classList.remove("thinking");
+        if (text) {
+          left -= 1;
+          panel.hidden = false;
+          wordEl.textContent = "💡 " + word;
+          textEl.textContent = text;
+        } else {
+          PZ.toast("No entry found — hint not used");
+        }
+        sync();
+      });
+    });
+    sync();
+    return {
+      reset: function () {
+        left = MAX; busy = false;
+        panel.hidden = true;
+        sync();
+      }
+    };
+  };
+
   /* ---------- UI helpers ---------- */
 
   var GAMES = [
@@ -150,6 +197,35 @@
   function randomOf(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
   PZ.praise = function () { return randomOf(PRAISE); };
   PZ.sashay = function () { return randomOf(SASHAY); };
+
+  /* ---------- Word explanations (hints) ---------- */
+
+  // Look up a short encyclopedia-style explanation for a word.
+  // Curated definitions win (reliable, offline); otherwise the English
+  // Wikipedia REST summary is fetched. Calls cb(text|null).
+  PZ.defineWord = function (word, cb) {
+    var curated = (window.BRAINBOW_DEFS || {})[word.toUpperCase()];
+    if (curated) { cb(curated); return; }
+    var url = "https://en.wikipedia.org/api/rest_v1/page/summary/" +
+      encodeURIComponent(word.toLowerCase()) + "?redirect=true";
+    fetch(url)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (j && j.extract && j.type !== "disambiguation") {
+          // keep it hint-sized: first sentence or two
+          var text = j.extract;
+          if (text.length > 220) {
+            var cut = text.indexOf(". ", 120);
+            if (cut !== -1) text = text.slice(0, cut + 1);
+            else text = text.slice(0, 217) + "…";
+          }
+          cb(text);
+        } else {
+          cb(null);
+        }
+      })
+      .catch(function () { cb(null); });
+  };
 
   // Render the level grid for a game. `onPlay(level)` fires on tap.
   // `count` defaults to the 100-level ladder; packs pass their own size.

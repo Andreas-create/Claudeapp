@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f1115" />
   <title>Connections · Brainbow</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%97%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="css/main.css?v=8" />
+  <link rel="stylesheet" href="css/main.css?v=9" />
 </head>
 <body>
   <div id="nav"></div>
@@ -26,7 +26,12 @@
       <div class="cn-solved" id="solved"></div>
       <div class="cn-grid" id="cgrid"></div>
       <div class="cn-dots" id="dots"></div>
+      <div class="hint-panel" id="hint-panel" hidden>
+        <div class="hint-word" id="hint-word"></div>
+        <div class="hint-text" id="hint-text"></div>
+      </div>
       <div class="btn-row" id="controls">
+        <button class="btn" id="hint-btn">💡 Hint <span id="hint-count">2</span></button>
         <button class="btn" id="shuffle-btn">Shuffle</button>
         <button class="btn" id="deselect-btn">Deselect</button>
         <button class="btn primary" id="submit-btn" disabled>Submit</button>
@@ -34,8 +39,9 @@
     </section>
   </main>
 
-  <script src="js/common.js?v=8"></script>
-  <script src="data/connections.js?v=8"></script>
-  <script src="js/connections.js?v=8"></script>
+  <script src="js/common.js?v=9"></script>
+  <script src="data/connections.js?v=9"></script>
+  <script src="data/definitions.js?v=9"></script>
+  <script src="js/connections.js?v=9"></script>
 </body>
 </html>
