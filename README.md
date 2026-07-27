@@ -6,6 +6,10 @@ and star ratings are saved locally in your browser.
 
 No accounts, no backend, no build step — just static HTML, CSS, and JavaScript.
 
+Brainbow is also an installable **PWA**: open it on a phone and add it to your
+home screen to get an app icon, a fullscreen (no browser bars) experience, and
+full offline play — the whole app is cached on first visit.
+
 ## The games
 
 | Game | How it works | Difficulty ramp |
@@ -47,7 +51,24 @@ js/connections.js              Affinity levels
 js/digits.js                   Digits levels
 data/wordle.js                 Difficulty-ordered word bands (4/5/6/7 letters)
 data/connections.js            Pool of 420 themed groups across three tiers
+manifest.json                  PWA metadata (name, icons, standalone display)
+sw.js                          Service worker: precaches the app for offline play
+icons/                         App icons (192/256/512 + maskable + Apple touch)
 ```
+
+### Installing on a phone
+
+- **Android / Chrome:** open the site and accept the "Install app" prompt, or
+  use the browser menu -> *Install app*.
+- **iPhone / Safari:** open the site, tap the Share button, then
+  *Add to Home Screen*.
+
+After the first load the app works with no connection at all. The only feature
+that needs the network is the Affinity hint lookup for words outside the
+bundled definitions.
+
+When assets change, bump the `?v=` query strings in the HTML **and** the
+`CACHE` name in `sw.js` so installed copies pick up the new version.
 
 Scripts are plain classic scripts sharing a global `PZ` namespace (rather than ES
 modules) so the pages work even when opened directly over `file://`.

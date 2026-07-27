@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="pride" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#ef5350"/>
+      <stop offset="20%"  stop-color="#ff9800"/>
+      <stop offset="40%"  stop-color="#ffd54f"/>
+      <stop offset="60%"  stop-color="#4caf7d"/>
+      <stop offset="80%"  stop-color="#42a5f5"/>
+      <stop offset="100%" stop-color="#7e57c2"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#12141a"/>
+  <!-- puzzle piece -->
+  <path fill="url(#pride)" d="
+    M150 130
+    h84
+    a34 34 0 1 1 44 0
+    h84
+    v84
+    a34 34 0 1 0 0 44
+    v84
+    h-84
+    a34 34 0 1 1 -44 0
+    h-84
+    v-84
+    a34 34 0 1 0 0 -44
+    z"/>
+</svg>
