@@ -521,3 +521,13 @@ main {
 
 /* Star badge & card star tint stays warm; add a subtle gradient to CTAs */
 .card-cta { background: var(--pride); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; font-weight: 800; }
+
+/* Keep the header from overflowing on small screens (longer wordmark + 4 links) */
+.nav .links { overflow-x: auto; scrollbar-width: none; }
+.nav .links::-webkit-scrollbar { display: none; }
+@media (max-width: 520px) {
+  .nav { padding-left: 12px; padding-right: 12px; gap: 6px; }
+  .nav .brand { font-size: 16px; }
+  .nav .links { gap: 2px; }
+  .nav .links a { font-size: 12.5px; padding: 6px 7px; white-space: nowrap; }
+}

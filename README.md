@@ -1,4 +1,4 @@
-# Puzzle Levels
+# Brainbow
 
 A small collection of puzzle games, each with **100 levels** that start easy and
 get progressively harder. Clear a level to unlock the next one. Your progress

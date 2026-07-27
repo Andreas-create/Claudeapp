@@ -120,7 +120,7 @@
     links += '<a class="' + (activeId === "peru" ? "active" : "") + '" href="peru.html">🇵🇪 Peru</a>';
     el.className = "nav";
     el.innerHTML =
-      '<a class="brand" href="index.html">🧩 <span>Levels</span></a>' +
+      '<a class="brand" href="index.html">🧩 <span>Brainbow</span></a>' +
       '<div class="spacer"></div><div class="links">' + links + "</div>";
   };
 
