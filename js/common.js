@@ -335,7 +335,7 @@
   /* Paste the site token from the Cloudflare dashboard here to turn counting
      on. Empty string = analytics fully off, no script, no request — which is
      how the app behaves everywhere the guards below bail out. */
-  var CF_BEACON_TOKEN = "";
+  var CF_BEACON_TOKEN = "ca0b0f8af3044434a39f9dacf22a29ea";
 
   function loadAnalytics() {
     try {
@@ -348,7 +348,9 @@
       }
       if (!document.head) return;
       var s = document.createElement("script");
-      s.defer = true;
+      // Cloudflare ships beacon.min.js as an ES module; loading it as a
+      // classic script would be a parse error. Module scripts defer by default.
+      s.type = "module";
       s.src = "https://static.cloudflareinsights.com/beacon.min.js";
       s.setAttribute("data-cf-beacon", JSON.stringify({ token: CF_BEACON_TOKEN }));
       document.head.appendChild(s);
