@@ -31,9 +31,14 @@
     var state = null, selection = [];
 
     var hints = PZ.setupHints({
-      getSelectedWord: function () {
+      // The category comes along so words that sit in more than one group
+      // get the right sense explained. It is never shown to the player.
+      getSelected: function () {
         if (!state || state.finished) return null;
-        return selection.length === 1 ? selection[0] : null;
+        if (selection.length !== 1) return null;
+        var w = selection[0];
+        var g = groups[wordToGroup[w]];
+        return { word: w, cat: g ? g.cat : null };
       }
     });
 

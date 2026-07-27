@@ -124,17 +124,17 @@
     }
     btn.addEventListener("click", function () {
       if (left <= 0 || busy) return;
-      var word = opts.getSelectedWord();
-      if (!word) { PZ.toast("Select one word first"); return; }
+      var sel = opts.getSelected();
+      if (!sel) { PZ.toast("Select one word first"); return; }
       busy = true; sync();
       btn.classList.add("thinking");
-      PZ.defineWord(word, function (text) {
+      PZ.defineWord(sel.word, sel.cat, function (text) {
         busy = false;
         btn.classList.remove("thinking");
         if (text) {
           left -= 1;
           panel.hidden = false;
-          wordEl.textContent = "💡 " + word;
+          wordEl.textContent = "💡 " + sel.word;
           textEl.textContent = text;
         } else {
           PZ.toast("No entry found — hint not used");
@@ -203,31 +203,17 @@
 
   /* ---------- Word explanations (hints) ---------- */
 
-  // Look up a short encyclopedia-style explanation for a word.
-  // Curated definitions win (reliable, offline); otherwise the English
-  // Wikipedia REST summary is fetched. Calls cb(text|null).
-  PZ.defineWord = function (word, cb) {
-    var curated = (window.BRAINBOW_DEFS || {})[word.toUpperCase()];
-    if (curated) { cb(curated); return; }
-    var url = "https://en.wikipedia.org/api/rest_v1/page/summary/" +
-      encodeURIComponent(word.toLowerCase()) + "?redirect=true";
-    fetch(url)
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) {
-        if (j && j.extract && j.type !== "disambiguation") {
-          // keep it hint-sized: first sentence or two
-          var text = j.extract;
-          if (text.length > 220) {
-            var cut = text.indexOf(". ", 120);
-            if (cut !== -1) text = text.slice(0, cut + 1);
-            else text = text.slice(0, 217) + "…";
-          }
-          cb(text);
-        } else {
-          cb(null);
-        }
-      })
-      .catch(function () { cb(null); });
+  // Look up a short explanation for a word. Everything ships in
+  // data/definitions.js, so hints work offline and never hit the network.
+  // `cat` is the word's group category: a handful of words mean different
+  // things in different groups (BOW the front of a ship vs. BOW the knot),
+  // and BRAINBOW_DEFS_BY_CAT holds those per-category readings.
+  // Kept callback-shaped so callers do not care that it now answers at once.
+  PZ.defineWord = function (word, cat, cb) {
+    var key = String(word).toUpperCase();
+    var byCat = window.BRAINBOW_DEFS_BY_CAT || {};
+    var text = (cat && byCat[cat + "||" + key]) || (window.BRAINBOW_DEFS || {})[key] || null;
+    cb(text);
   };
 
   // Render the level grid for a game. `onPlay(level)` fires on tap.
