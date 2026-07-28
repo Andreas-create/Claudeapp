@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Brainbow",
   "short_name": "Brainbow",
-  "description": "Puzzle games with a little sparkle — Word Guess, Affinity and Digits, 200 levels each, plus themed packs.",
+  "description": "Puzzle games with a little sparkle — Word Guess, Affinity and Crunch, 200 levels each, plus themed packs.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -20,6 +20,6 @@
   "shortcuts": [
     { "name": "Word Guess", "url": "./wordle.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Affinity", "url": "./connections.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Digits", "url": "./digits.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Crunch", "url": "./digits.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

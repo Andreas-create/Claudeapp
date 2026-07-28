@@ -24,7 +24,7 @@ repo is the user-site repo, so it publishes at the domain root).
 index.html          Home: game cards + themed packs
 wordle.html         Word Guess      (level select + play)
 connections.html    Affinity        (level select + play)
-digits.html         Digits          (level select + play)
+digits.html         Crunch          (level select + play)
 peru.html           Peru Affinity   (10-puzzle themed pack)
 
 js/common.js        Shared engine: seeded RNG, progress/stars storage,
@@ -35,7 +35,7 @@ js/cn-engine.js     Shared Affinity gameplay — drives BOTH connections.js
 js/connections.js   Affinity: level scheduler + config only (~80 lines)
 js/peru.js          Peru pack: config only (~28 lines)
 js/wordle.js        Word Guess logic
-js/digits.js        Digits logic
+js/digits.js        Crunch logic (internal id stays "digits")
 js/home.js          Home cards
 
 data/wordle.js      WORDLE_BANDS: four/five/six/seven-letter answer lists
@@ -62,7 +62,7 @@ icons/              App icons (+ icon.svg source)
   A least-recently-used scheduler guarantees **no category repeats within
   100 levels** (measured min gap 103); each is used at most twice.
   If you add or remove categories, re-run the gap check before pushing.
-- **Digits** — always solvable by construction (the generator folds the
+- **Crunch** — always solvable by construction (the generator folds the
   numbers down to derive the target). Levels 1–100 ramp 3→6 tiles; 101–200
   keep six tiles but use bigger source numbers (up to 75) and larger targets.
   **Any generator change must be re-verified with the brute-force solver.**
@@ -146,7 +146,7 @@ rm -rf node_modules package.json package-lock.json   # keep the repo clean
   `file://` is fine for everything else.
 - For data/scheduler changes, prefer a plain Node script that evals
   `js/common.js` + the data file and checks invariants across all 200 levels
-  (uniqueness, no word collisions, category gaps, Digits solvability).
+  (uniqueness, no word collisions, category gaps, Crunch solvability).
 - `*.github.io` is unreachable from the sandbox, so the live site cannot be
   fetched — verify locally and check the Actions tab.
 

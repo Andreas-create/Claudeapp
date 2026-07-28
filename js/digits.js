@@ -1,4 +1,10 @@
-/* Digits — 200 levels. Combine the numbers with + - x / to reach the target.
+/* Crunch — 200 levels. Combine the numbers with + - x / to reach the target.
+
+   The game is called Crunch everywhere a player can see it, but its internal
+   id stays "digits": that id is both the localStorage key (pz:digits:progress)
+   and the RNG seed prefix, so renaming it would wipe saved progress and
+   reshuffle all 200 generated levels. Display name only — leave the id alone.
+
    Difficulty ramps by how many numbers you juggle (3 -> 6) and how large the
    target and numbers get. Every level is generated solvable by construction. */
 (function () {

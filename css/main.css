@@ -14,9 +14,16 @@
   --pride: linear-gradient(90deg, #ef5350, #ff9800, #ffd54f, #4caf7d, #42a5f5, #7e57c2);
   --pride-tilt: linear-gradient(120deg, #ef5350, #ff9800, #ffd54f, #4caf7d, #42a5f5, #7e57c2);
 
-  --good: #4caf7d;   /* correct spot / solved */
+  --good: #4caf7d;   /* solved / progress, used across the app */
   --warn: #d8a94a;   /* present, wrong spot */
   --miss: #3a3f4a;   /* absent */
+
+  /* Word Guess "correct spot" is deliberately Brainbow blue-violet rather
+     than the green everyone expects from that genre — more on-brand, and it
+     keeps our board from reading as a copy of someone else's. Kept separate
+     from --good so the rest of the app's solved-green is untouched. */
+  --wg-good: #5b83ea;
+  --wg-good-2: #9b6cf0;
 
   /* Connections group colours — a vivid pride rainbow (warm → cool) */
   --c-yellow: #ff6b6b; /* d0 — coral red */
@@ -235,7 +242,10 @@ main {
   color: var(--text);
 }
 .wg-cell.filled { border-color: var(--text-faint); animation: pop .1s ease; }
-.wg-cell.good { background: var(--good); border-color: var(--good); color: #fff; }
+.wg-cell.good {
+  background: linear-gradient(135deg, var(--wg-good), var(--wg-good-2));
+  border-color: var(--wg-good); color: #fff;
+}
 .wg-cell.warn { background: var(--warn); border-color: var(--warn); color: #fff; }
 .wg-cell.miss { background: var(--miss); border-color: var(--miss); color: #fff; }
 .wg-cell.reveal { background: transparent; border-color: var(--accent); color: var(--accent); }
@@ -260,7 +270,7 @@ main {
   cursor: pointer;
 }
 .key.wide { flex: 1.6; font-size: 12px; }
-.key.good { background: var(--good); color: #fff; }
+.key.good { background: linear-gradient(135deg, var(--wg-good), var(--wg-good-2)); color: #fff; }
 .key.warn { background: var(--warn); color: #fff; }
 .key.miss { background: var(--miss); color: #fff; }
 .key:active { transform: translateY(1px); }
