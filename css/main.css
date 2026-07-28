@@ -404,13 +404,11 @@ main {
   display: grid;
   place-items: center;
 }
-.lv.locked { color: var(--text-faint); background: var(--bg-elev-2); cursor: default; opacity: .7; }
 .lv.open { border-color: var(--line); }
 .lv.next { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
 .lv.done { background: color-mix(in srgb, var(--good) 20%, var(--bg-elev)); border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
-.lv:active:not(.locked) { transform: translateY(1px); }
+.lv:active { transform: translateY(1px); }
 .lvnum { line-height: 1; }
-.lvlock { font-size: 15px; }
 .lvstars {
   position: absolute; bottom: 5px; left: 0; right: 0;
   font-size: 9px; letter-spacing: 1px; color: var(--warn); line-height: 1;

@@ -3,8 +3,8 @@
 **Play it: https://brainbow-puzzle.github.io**
 
 A small collection of puzzle games, each with **200 levels** that start easy and
-get progressively harder. Clear a level to unlock the next one. Your progress
-and star ratings are saved locally in your browser.
+get progressively harder. Every level is open from the start — play them in any
+order. Your progress and star ratings are saved locally in your browser.
 
 No accounts, no backend, no build step — just static HTML, CSS, and JavaScript.
 

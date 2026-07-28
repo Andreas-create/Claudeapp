@@ -68,15 +68,16 @@ and wildlife. More packs to come.
 • No account and no sign-in. Your progress is saved on your device and stays
   there — we never see it.
 • 600+ levels across the three games, plus themed packs.
-• Earn up to three stars a level. Clear one to unlock the next.
+• Earn up to three stars a level. Every level is open from the start —
+  play them in any order.
 • Light and dark themes, following your phone.
 • Warm, playful and a little camp — the wins and losses have opinions.
 
 ── A NOTE ON DIFFICULTY ──
 
-Levels unlock in order and get steadily harder. Lose one and it stays lost —
-you can reopen it to see the answer, but not replay it. The next level unlocks
-either way, so you are never stuck.
+Levels get steadily harder as the numbers climb, but nothing is locked — jump
+straight to level 150 if you like. Lose one and it stays lost: you can reopen
+it to see the answer, but not replay it.
 
 Brainbow is free, contains no advertising, and collects no personal
 information. It is a small independent project, not a service.

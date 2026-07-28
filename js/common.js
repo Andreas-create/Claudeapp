@@ -69,21 +69,22 @@
     if (!p.lost) p.lost = {};
     return p;
   };
-  PZ.isUnlocked = function (game, level) { return level <= PZ.getProgress(game).reached + 1; };
+  // Every level is playable from the start — nothing is gated behind clearing
+  // the one before it. Kept as a function because callers still ask.
+  PZ.isUnlocked = function () { return true; };
   PZ.isWon = function (game, level) { return (PZ.getProgress(game).stars[level] || 0) > 0; };
   PZ.isLost = function (game, level) { return !!PZ.getProgress(game).lost[level]; };
   PZ.wonCount = function (game) { return Object.keys(PZ.getProgress(game).stars).length; };
 
-  // Can this level be opened at all? Any non-locked level can be opened —
-  // a win to replay, a loss to review (read-only), an unlocked level to play.
-  // openable() is the same test against an already-loaded progress object,
-  // for callers that check many levels at once.
-  function openable(p, level, allOpen) {
-    return !!(allOpen || (p.stars[level] || 0) > 0 || p.lost[level] || level <= p.reached + 1);
-  }
-  PZ.canOpen = function (game, level, allOpen) {
-    return openable(PZ.getProgress(game), level, allOpen);
-  };
+  /* Can this level be opened? Always — players pick any level in any order.
+     Brainbow used to gate level N+1 behind clearing N; that is gone, and the
+     `allOpen` flag the packs used to pass is now the behaviour everywhere.
+
+     This is NOT the same question as "can it be played". A lost level still
+     opens read-only for review; the engines check PZ.isLost for that, and this
+     change does not touch it. */
+  function openable() { return true; }
+  PZ.canOpen = function () { return true; };
 
   // Record a finished level. A win stores its best star rating; a loss marks
   // the level failed. Either way the reached frontier advances so the next
@@ -357,23 +358,23 @@
 
   // Render the level grid for a game. `onPlay(level)` fires on tap.
   // `count` defaults to the 100-level ladder; packs pass their own size.
-  PZ.renderLevelGrid = function (container, game, onPlay, count, allOpen) {
+  // Every level is tappable — nothing is locked.
+  PZ.renderLevelGrid = function (container, game, onPlay, count) {
     count = count || PZ.LEVELS;
     var p = PZ.getProgress(game);
     var html = "";
     for (var l = 1; l <= count; l++) {
       var won = (p.stars[l] || 0) > 0;
       var lost = !!p.lost[l];
-      var unlocked = allOpen || l <= p.reached + 1;
-      var clickable = unlocked; // won=replay, lost=review, open=play
-      var next = !allOpen && unlocked && !won && !lost && l === p.reached + 1;
-      var cls = "lv " + (won ? "done" : lost ? "lost" : unlocked ? "open" : "locked") + (next ? " next" : "");
+      // Ring the level after the furthest one reached — not a gate, just a
+      // "you got up to here" marker so picking up where you left off is easy.
+      var next = !won && !lost && l === p.reached + 1;
+      var cls = "lv " + (won ? "done" : lost ? "lost" : "open") + (next ? " next" : "");
       var inner;
       if (won) inner = '<span class="lvnum">' + l + '</span><span class="lvstars">' + stars(p.stars[l]) + "</span>";
       else if (lost) inner = '<span class="lvnum">' + l + '</span><span class="lvx">✕</span>';
-      else if (unlocked) inner = '<span class="lvnum">' + l + "</span>";
-      else inner = '<span class="lvlock">🔒</span>';
-      html += '<button class="' + cls + '" data-level="' + l + '"' + (clickable ? "" : " disabled") + ">" + inner + "</button>";
+      else inner = '<span class="lvnum">' + l + "</span>";
+      html += '<button class="' + cls + '" data-level="' + l + '">' + inner + "</button>";
     }
     container.innerHTML = html;
     container.querySelectorAll("button:not([disabled])").forEach(function (b) {
@@ -390,14 +391,10 @@
   // Play-view header with a Levels button and prev/next level arrows.
   // opts: {game, level, label, onGoto(level), onLevels}
   PZ.renderPlayNav = function (container, opts) {
-    var lv = opts.level, max = opts.max || PZ.LEVELS, ao = opts.allOpen;
-    var prog = PZ.getProgress(opts.game); // one read for the whole scan
-    // Nearest openable level in a direction (skips locked levels).
-    function step(dir) {
-      for (var l = lv + dir; l >= 1 && l <= max; l += dir) if (openable(prog, l, ao)) return l;
-      return null;
-    }
-    var prevT = step(-1), nextT = step(1);
+    var lv = opts.level, max = opts.max || PZ.LEVELS;
+    // Nothing is locked, so the arrows are simply the neighbouring levels.
+    var prevT = lv > 1 ? lv - 1 : null;
+    var nextT = lv < max ? lv + 1 : null;
     container.className = "play-head";
     container.innerHTML =
       '<button class="btn back" data-act="levels">▦ Levels</button>' +

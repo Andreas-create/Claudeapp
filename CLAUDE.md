@@ -74,12 +74,16 @@ icons/              App icons (+ icon.svg source)
 
 **Progress model** (`js/common.js`): `{reached, stars:{lvl:n}, lost:{lvl:true}}`
 in `localStorage` under `pz:<game>:progress`.
+- **Every level is open from the start.** Players pick any level in any order;
+  nothing is gated behind clearing the one before it. `PZ.canOpen()` and
+  `PZ.isUnlocked()` now always return true, kept only because callers ask.
 - Win → stars, level replayable.
 - **Lose → final.** No replay, ever. The level is marked lost, shows a red ✕,
   and opens **read-only for review** (Affinity reveals all groups; Word Guess
-  reveals the answer). A loss still advances `reached`, so players are never
-  stuck.
-- `PZ.canOpen()` gates entry; `openable()` is the batch variant.
+  reveals the answer). This is separate from unlocking — a lost level is open
+  but not playable.
+- `reached` no longer gates anything; it just rings the "you got up to here"
+  level in the grid and drives the home-card Continue label.
 
 **Hints** (Affinity + Peru): 2 per puzzle. Select exactly one word → 💡 Hint →
 a plain-language definition. **Entirely offline** — every word in play has an
