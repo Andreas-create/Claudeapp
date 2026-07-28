@@ -62,4 +62,7 @@
         '</div>' +
       '</div>' +
     '</a>';
+
+  // Offer "add to your phone" — no-op once Brainbow runs as an installed app.
+  PZ.setupInstall(document.getElementById("install-slot"));
 })();

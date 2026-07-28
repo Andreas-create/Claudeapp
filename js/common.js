@@ -183,6 +183,140 @@
     toastTimer = setTimeout(function () { t.remove(); }, ms || 1400);
   };
 
+  /* ---------- "Add to your phone" (PWA install) ---------- */
+
+  /* Chrome and Edge fire beforeinstallprompt instead of installing outright,
+     so stash the event and let our own button trigger the real prompt. The
+     listener is registered as the file loads, because the event can fire
+     before anything else has had a chance to ask for it.
+     Safari on iOS has no such API at all — there the button can only explain
+     the Share → Add to Home Screen route, which is why this falls back to
+     instructions rather than pretending every browser can be prompted. */
+  var deferredInstall = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    deferredInstall = e;
+    var b = document.getElementById("pz-install-btn");
+    if (b) b.textContent = "📲 Install Brainbow";
+  });
+
+  /* True when Brainbow is running as an installed app rather than in a browser
+     tab, so the install button can stay hidden for people who already have it.
+     The manifest asks for "standalone", but a launcher may hand back
+     fullscreen or minimal-ui, and iOS reports it through navigator.standalone
+     instead of a media query — so check all four.
+     Note the limit: this detects "launched from the home screen", not "is
+     installed somewhere". Someone who has installed Brainbow and then opens it
+     in a normal browser tab will still see the button. There is no reliable
+     cross-browser way to ask "is this already installed?" from a tab. */
+  function alreadyInstalled() {
+    try {
+      var modes = ["standalone", "fullscreen", "minimal-ui"];
+      for (var i = 0; i < modes.length; i++) {
+        if (window.matchMedia && window.matchMedia("(display-mode: " + modes[i] + ")").matches) {
+          return true;
+        }
+      }
+      return window.navigator.standalone === true; // iOS Safari home-screen launch
+    } catch (e) { return false; }
+  }
+
+  // Per-platform steps, because the gesture genuinely differs.
+  function installSteps() {
+    var ua = navigator.userAgent || "";
+    var iOS = /iPad|iPhone|iPod/.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var android = /Android/.test(ua);
+    if (iOS) {
+      return {
+        head: "On iPhone or iPad",
+        steps: [
+          "Open Brainbow in <b>Safari</b> (this only works there).",
+          "Tap the <b>Share</b> button — the square with an arrow out of it.",
+          "Scroll down and tap <b>Add to Home Screen</b>.",
+          "Tap <b>Add</b>. Brainbow now sits with your other apps."
+        ]
+      };
+    }
+    if (android) {
+      return {
+        head: "On Android",
+        steps: [
+          "Tap the <b>⋮</b> menu at the top right of the browser.",
+          "Choose <b>Install app</b> or <b>Add to Home screen</b>.",
+          "Confirm, and Brainbow joins your other apps."
+        ]
+      };
+    }
+    return {
+      head: "On a computer",
+      steps: [
+        "Look for the <b>install icon</b> in the address bar — a small screen with a downward arrow.",
+        "Or open the browser menu and choose <b>Install Brainbow</b>.",
+        "It then opens in its own window, with no tabs or address bar."
+      ]
+    };
+  }
+
+  function showInstallHelp() {
+    var info = installSteps();
+    var ov = document.getElementById("pz-install");
+    if (!ov) {
+      ov = document.createElement("div");
+      ov.id = "pz-install";
+      ov.className = "overlay";
+      document.body.appendChild(ov);
+    }
+    ov.innerHTML =
+      '<div class="sheet">' +
+        "<h2>Play Brainbow like an app 📲</h2>" +
+        '<p class="result-line">' + info.head + "</p>" +
+        '<ol class="install-steps">' +
+          info.steps.map(function (s) { return "<li>" + s + "</li>"; }).join("") +
+        "</ol>" +
+        '<p class="install-note">Once it is added, Brainbow works with no signal at all — ' +
+          "every puzzle keeps playing offline, and your progress stays on the device.</p>" +
+        '<div class="btn-row"><button class="btn primary" id="pz-install-close">Got it</button></div>' +
+      "</div>";
+    ov.hidden = false;
+    function close() { ov.hidden = true; }
+    document.getElementById("pz-install-close").addEventListener("click", close);
+    ov.addEventListener("click", function (e) { if (e.target === ov) close(); });
+  }
+
+  // Mounts the install button into `mount`. Renders nothing when Brainbow is
+  // already running as an installed app — there is nothing left to offer.
+  PZ.setupInstall = function (mount) {
+    if (!mount || alreadyInstalled()) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "pz-install-btn";
+    btn.className = "btn install-btn";
+    btn.textContent = deferredInstall ? "📲 Install Brainbow" : "📲 Add to your phone";
+    mount.appendChild(btn);
+
+    btn.addEventListener("click", function () {
+      if (deferredInstall) {
+        deferredInstall.prompt();
+        var choice = deferredInstall.userChoice;
+        deferredInstall = null;
+        if (choice && choice.then) {
+          choice.then(function (res) {
+            // Declining is fine — leave the button so they can change their mind.
+            if (res && res.outcome === "accepted") btn.remove();
+          })["catch"](function () {});
+        }
+        return;
+      }
+      showInstallHelp();
+    });
+
+    window.addEventListener("appinstalled", function () {
+      btn.remove();
+      PZ.toast("Installed — Brainbow is on your home screen 📲", 2200);
+    });
+  };
+
   // Celebratory phrases on a win, sassy-but-kind ones on a loss.
   var PRAISE = [
     "Slay! 💅", "Yes QUEEN 👑", "Snapped! 📸", "Werk! 💃", "You ate that 🍽️",

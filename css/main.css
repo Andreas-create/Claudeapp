@@ -157,6 +157,26 @@ main {
 
 .home-foot { text-align: center; color: var(--text-faint); font-size: 12.5px; margin-top: 30px; }
 
+/* "Add to your phone" — the install button and its explainer sheet */
+.install-slot { display: flex; justify-content: center; margin: 26px 0 4px; }
+.install-btn { font-size: 14px; padding: 9px 15px; }
+.install-steps {
+  margin: 0 0 14px;
+  padding-left: 22px;
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.install-steps li { margin-bottom: 7px; }
+.install-steps b { color: var(--text); }
+.install-note {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+
 /* ---------- Generic game chrome ---------- */
 .game-head { text-align: center; margin-bottom: 14px; }
 .game-head h1 { font-size: 24px; margin: 0 0 2px; letter-spacing: -.02em; }
