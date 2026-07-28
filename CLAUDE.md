@@ -44,6 +44,11 @@ data/peru.js        PERU_PUZZLES: 10 hand-authored puzzles
 data/definitions.js BRAINBOW_DEFS + BRAINBOW_DEFS_BY_CAT: offline hint text
                     for every word in play (generated — see "Hints")
 
+privacy.html        Privacy policy (required by Play; states the analytics)
+store/              Play Store assets + generate.js to rebuild them
+store-listing.md    Play listing copy and Data Safety answers
+.well-known/        Digital Asset Links for the Android TWA (see its README)
+
 manifest.json       PWA metadata      sw.js      Service worker (offline)
 icons/              App icons (+ icon.svg source)
 .github/workflows/pages.yml   Deploys to Pages on push to main
@@ -154,4 +159,20 @@ rm -rf node_modules package.json package-lock.json   # keep the repo clean
 
 Export/import of saved progress (survives domain moves), a fourth game,
 more themed packs, share cards, real dictionary validation for Word Guess
-guesses, Capacitor wrappers for the app stores.
+guesses.
+
+## Play Store
+
+Groundwork is done: privacy policy, asset-links scaffold, screenshots and
+listing copy. The route is a **Trusted Web Activity** (Bubblewrap or
+PWABuilder), not Capacitor — a TWA loads the live site, so content changes
+ship by pushing to main instead of waiting on a store review.
+
+Two naming decisions were made to keep distance from well-known NYT titles,
+and should not be quietly reverted: **Crunch** was renamed from Digits (an NYT
+game with the same mechanic), and Word Guess fills correct letters with
+blue-violet rather than the green that genre is known for.
+
+Outstanding, all in `store-listing.md`: create the support email, settle the
+final domain *before* the first release (a TWA hardcodes its origin), and the
+12-testers-for-14-days gate on new personal developer accounts.
