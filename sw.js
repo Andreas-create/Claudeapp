@@ -4,7 +4,7 @@
 
    Bump CACHE whenever assets change — the old cache is deleted on activate.
    Keep this version in step with the ?v= query strings in the HTML. */
-var CACHE = "brainbow-v21";
+var CACHE = "brainbow-v22";
 
 var ASSETS = [
   "./",
@@ -13,6 +13,7 @@ var ASSETS = [
   "./connections.html",
   "./digits.html",
   "./peru.html",
+  "./privacy.html",
   "./manifest.json",
   "./css/main.css",
   "./js/common.js",

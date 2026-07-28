@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>Privacy · Brainbow</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%A9%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/main.css?v=22" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Brainbow" />
+  <meta name="mobile-web-app-capable" content="yes" />
+</head>
+<body>
+  <div id="nav"></div>
+
+  <main class="prose">
+    <h1>Privacy</h1>
+    <p class="prose-lead">
+      Brainbow does not collect personal information, does not use cookies, does
+      not show ads, and has no accounts to sign into. There is no server that
+      stores anything about you.
+    </p>
+    <p class="prose-date">Last updated 28 July 2026</p>
+
+    <h2>What stays on your device</h2>
+    <p>
+      Your progress — which levels you have reached, your stars, and which levels
+      you lost — is saved in your browser's <b>local storage</b> on the device you
+      played on. It is never uploaded, never synced between devices, and nobody
+      else can read it. Clearing your browser data, or uninstalling the app,
+      deletes it permanently. There is no way for us to recover it, because we
+      never had a copy.
+    </p>
+
+    <h2>What is measured</h2>
+    <p>
+      Brainbow uses <b>Cloudflare Web Analytics</b> to count visits. It is
+      cookieless: it sets no identifiers, does not fingerprint your device, and
+      does not follow you to other sites. It records a page view with the page
+      address, referring site, country, browser and device type — never anything
+      that identifies you personally, and never anything about how you played.
+    </p>
+    <p>
+      Because Brainbow works offline once installed, most play is never counted at
+      all. The numbers are a rough measure of interest, nothing more. Cloudflare
+      processes this data as our provider; their handling is described in
+      Cloudflare's own privacy documentation.
+    </p>
+
+    <h2>What is never collected</h2>
+    <ul>
+      <li>No name, email address, phone number or account of any kind.</li>
+      <li>No advertising identifiers, and no advertising.</li>
+      <li>No location beyond the country Cloudflare infers from your connection.</li>
+      <li>No contacts, photos, camera, microphone or files.</li>
+      <li>No data is sold, shared or used to build a profile of you.</li>
+    </ul>
+
+    <h2>Children</h2>
+    <p>
+      Brainbow is suitable for all ages. It collects no personal information from
+      anyone, children included.
+    </p>
+
+    <h2>Your choices</h2>
+    <p>
+      To erase everything Brainbow has stored about you, clear this site's data in
+      your browser settings, or uninstall the app. To avoid the analytics beacon
+      entirely, most content blockers stop it, and it never fires when you are
+      offline.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions about this policy: <a href="mailto:brainbow.puzzle@gmail.com">brainbow.puzzle@gmail.com</a>
+    </p>
+
+    <p class="prose-foot">
+      If this policy changes, the date at the top changes with it.
+    </p>
+  </main>
+
+  <script src="js/common.js?v=22"></script>
+  <script>
+    PZ.renderNav(null);
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
